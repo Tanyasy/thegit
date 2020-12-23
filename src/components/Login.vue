@@ -60,16 +60,27 @@ export default {
        login() {
            this.$refs.loginFormRef.validate(async valid => {
                if (!valid) return;
-               const { data: res } = await this.$http.post('login', this.loginForm);
-               if ( res.meta.status !== 200) {
-                   this.$message.error('登录失败了呢(╥╯^╰╥)')
-                   return
-               }  
+            //    const { data: res } = await this.$http.post('login', this.loginForm);
+            //    if ( res.meta.status !== 200) {
+            //        this.$message.error('登录失败了呢(╥╯^╰╥)')
+            //        return
+            //    }  
+            //     this.$message({
+            //         message: '登录成功了٩(๑>◡<๑)۶ ，欢迎您，' + res.data.username,
+            //         type: 'success'
+            //     });
+            //     return
+            if (this.loginForm.username === "admin" && this.loginForm.password === "123456") {
                 this.$message({
-                    message: '登录成功了٩(๑>◡<๑)۶ ，欢迎您，' + res.data.username,
+                    message: '登录成功了٩(๑>◡<๑)۶ ，欢迎您，' + this.loginForm.username,
                     type: 'success'
                 });
+                this.$router.push("/home")
+            } else {
+                this.$message.error('登录失败了呢(╥╯^╰╥)')
                 return
+            }
+
            })
        }
    } 
