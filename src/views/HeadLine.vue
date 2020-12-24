@@ -1,25 +1,25 @@
 <template>
-  <div class='head'>
-      <SvgIcon icon-class="Fold" />
-  </div>
+    <div class='head'>
+        <svg-icon @click="setCollapse" :icon-class="isCollapse?'unFold':'Fold'"/>
+    </div>
 </template>
 
 <script>
-import SvgIcon from '../components/SvgIcon'
 
-export default {
-    name: "headLine",
-    data() {
-        return {
+    import {useStore} from "vuex";
+    import {computed} from "vue";
 
+    export default {
+        name: "headLine",
+        setup() {
+            const store = useStore()
+
+            return {
+                isCollapse: computed(()=>store.state.isCollapse),
+                // 访问一个 mutation
+                setCollapse: () => store.commit("setCollapse")
+            }
         }
-    },
-    methods: {
-
-    },
-    components: {
-        SvgIcon
-    }
     }
 </script>
 
@@ -27,6 +27,7 @@ export default {
     .head {
         height: 100%;
     }
+
     .svg-icon {
         height: 24px;
         width: 24px;

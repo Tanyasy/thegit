@@ -1,10 +1,7 @@
 <template>
   <div class="home">
     <el-container>
-      <el-aside width="200px">
-        <el-menu default-active="1-4-1" class="el-menu-vertical" 
-            @open="handleOpen" 
-            @close="handleClose" 
+        <el-menu default-active="1-0-0" class="el-menu-vertical"
             :collapse="isCollapse"
               background-color="#545c64"
               text-color="#fff"
@@ -39,8 +36,7 @@
             <i class="el-icon-setting"></i>
             <template #title>导航四</template>
           </el-menu-item>
-        </el-menu>
-      </el-aside>
+      </el-menu>
       <el-container>
         <el-header><Header></Header></el-header>
         <el-main>Main</el-main>
@@ -51,11 +47,22 @@
 
 <script>
 import Header from "./HeadLine"
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 
 export default {
   name: 'Home',
   components: {
     Header
+  },
+  setup() {
+    // 获取store对象
+    const store = useStore()
+
+    return {
+      //  computed方法传一个getter，并返回一个ref对象
+      isCollapse: computed(()=>store.state.isCollapse)
+     }
   }
 }
 </script>
@@ -73,7 +80,9 @@ export default {
   .el-header {
     background-color: gray;
   }
-
+  .el-menu-vertical {
+    border: 0;
+  }
   .el-menu-vertical:not(.el-menu--collapse) {
     width: 200px;
     min-height: 400px;
