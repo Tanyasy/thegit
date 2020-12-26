@@ -6,6 +6,7 @@ import store from './store'
 import router from './router'
 import './assets/css/global.css'
 import SvgIcon from '@/components/SvgIcon.vue'// svg组件
+import './assets/icon/iconfont.css'
 
 const app = createApp(App)
 app.use(ElementPlus)

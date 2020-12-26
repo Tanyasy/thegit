@@ -1,0 +1,23 @@
+{
+  "id": "2266015",
+  "name": "tomato",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-extra",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2101473",
+      "name": "log-out",
+      "font_class": "log-out",
+      "unicode": "e70f",
+      "unicode_decimal": 59151
+    },
+    {
+      "icon_id": "8233258",
+      "name": "30-颜色-番茄红",
+      "font_class": "-yanse-fanqiehong",
+      "unicode": "e6ab",
+      "unicode_decimal": 59051
+    }
+  ]
+}
