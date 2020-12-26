@@ -37,7 +37,9 @@
             <el-header>
                 <Header></Header>
             </el-header>
-            <el-main>Main</el-main>
+            <el-main>
+              <StaticBox />
+            </el-main>
         </el-container>
     </el-container>
 </div>
@@ -45,6 +47,7 @@
 
 <script>
 import Header from "./HeadLine"
+import StaticBox from './StaticBox'
 import {
     computed
 } from 'vue'
@@ -55,7 +58,7 @@ import {
 export default {
     name: 'Home',
     components: {
-        Header
+        Header, StaticBox
     },
     setup() {
         // 获取store对象
@@ -69,7 +72,8 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang='scss' scoped>
+$a:200px;
 .home,
 .el-container {
     height: 100%;
@@ -90,7 +94,7 @@ export default {
 }
 
 .el-menu-vertical:not(.el-menu--collapse) {
-    width: 200px;
+    width: $a;
     min-height: 400px;
 }
 </style>>
