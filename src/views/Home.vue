@@ -1,33 +1,26 @@
 <template>
 <div class="home">
     <el-container>
-        <el-menu default-active="1-0-0" class="el-menu-vertical" :collapse="isCollapse" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" collapse-transition="false">
-            <el-menu-item index="/home">
-                <i class="el-icon-location"></i>
-                <span>首页</span>
-            </el-menu-item>
-            <el-submenu index="2">
-                <template #title>
-                    <i class="el-icon-menu"></i>
-                    <span>菜单</span>
-                </template>
-                <el-menu-item-group>
-                    <template #title>分组一</template>
-                    <el-menu-item index="1-1">选项1</el-menu-item>
-                    <el-menu-item index="1-2">选项2</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group title="分组2">
-                    <el-menu-item index="1-3">选项3</el-menu-item>
-                </el-menu-item-group>
-                <el-submenu index="1-4">
-                    <template #title>选项4</template>
-                    <el-menu-item index="1-4-1">选项1</el-menu-item>
-                </el-submenu>
-            </el-submenu>
-            <el-menu-item index="4">
-                <i class="el-icon-setting"></i>
-                <template #title>设置</template>
-            </el-menu-item>
+        <el-menu default-active="$route.path" class="el-menu-vertical" :collapse="isCollapse" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" collapse-transition="false" router>
+            <div v-for="(item, index) in routers" :key="index">
+                <div v-if="!item.hidden&&item.meta">
+                    <el-menu-item v-if="hasOneShowingChild(item.children)" :index="item.path">
+                        <i :class="item.meta&&item.meta.icon"></i>
+                        <template #title>{{ item.meta.title }}</template>
+                    </el-menu-item>
+                    <el-submenu v-else :index="item.path">
+                        <template #title>
+                            <i :class="item.meta&&item.meta.icon"></i>
+                            <!-- 用v-show修复导航栏缩进时文字不隐藏的问题 -->
+                            <span v-show='!isCollapse'>{{ item.meta.title }}</span>
+                        </template>
+
+                        <el-menu-item v-for="(child, childIndex) in item.children" :key="childIndex" :index="child.path" v-show="!hasOneShowingChild(item.children)">
+                            {{ child.meta.title }}
+                        </el-menu-item>
+                    </el-submenu>
+                </div>
+            </div>
         </el-menu>
         <el-container>
             <el-header>
@@ -44,11 +37,15 @@
 <script>
 import Header from "./HeadLine"
 import {
-    computed
+    computed,
+    reactive
 } from 'vue'
 import {
     useStore
 } from 'vuex'
+import {
+    useRouter
+} from "vue-router"
 
 export default {
     name: 'Home',
@@ -58,10 +55,33 @@ export default {
     setup() {
         // 获取store对象
         const store = useStore()
+        const route = useRouter()
+        let routers = reactive(route.options.routes)
+        console.log(routers.values)
+
+        function hasOneShowingChild(children = []) {
+            const showingChildren = children.filter(item => {
+                if (item.hidden) {
+                    return false
+                } else {
+                    return true
+                }
+            })
+            if (showingChildren.length === 1) {
+                return true
+            }
+            if (showingChildren.length === 0) {
+                return true
+            }
+
+            return false
+        }
 
         return {
             //  computed方法传一个getter，并返回一个ref对象
-            isCollapse: computed(() => store.state.isCollapse)
+            isCollapse: computed(() => store.state.isCollapse),
+            routers,
+            hasOneShowingChild
         }
     }
 }
