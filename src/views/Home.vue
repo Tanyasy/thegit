@@ -1,7 +1,7 @@
 <template>
 <div class="home">
     <el-container>
-        <el-menu default-active="$route.path" class="el-menu-vertical" :collapse="isCollapse" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" collapse-transition="false" router>
+        <el-menu :default-active="$route.path" class="el-menu-vertical" :collapse="isCollapse" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" collapse-transition="false" router>
             <div v-for="(item, index) in routers" :key="index">
                 <div v-if="!item.hidden&&item.meta">
                     <el-menu-item v-if="hasOneShowingChild(item.children)" :index="item.path">

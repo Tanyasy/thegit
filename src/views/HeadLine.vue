@@ -1,7 +1,9 @@
 <template>
 <div class='head'>
     <svg-icon @click="setCollapse" :icon-class="isCollapse?'unFold':'Fold'" />
-
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item v-for="(item, index) in getCurrentRoute()" :key="index" :to="item.path">{{ item.meta.title }}</el-breadcrumb-item>
+    </el-breadcrumb>
     <el-dropdown @visible-change="changeValue" style="float: right">
         <div class="user-item">
             <el-avatar size="50" :src="circleUrl"></el-avatar>
@@ -36,10 +38,28 @@ export default {
         const store = useStore()
         const circleUrl = ref(require("../assets/duck.jpg"))
         const rotate = ref(false)
-        const route = useRouter()
-
+        const router = useRouter()
         function changeValue(callback) {
             rotate.value = callback
+        }
+
+        function getCurrentRoute() {
+            let matched = router.currentRoute.value.matched
+            const first = matched[0]
+            if (first&& first.name != "home") {
+                matched = [{ path: '/home',
+                            name: 'home',
+                            meta: {title: "首页"}}].concat(matched)
+            } else {
+                matched = [{ path: '/home',
+                             name: 'home',
+                             meta: {
+                                 title: "首页"
+                                 }
+                             }
+                             ]
+            }
+            return matched
         }
 
         return {
@@ -51,8 +71,9 @@ export default {
             setCollapse: () => store.commit("setCollapse"),
             backToLogin() {
                 // todo:清除session之类的
-                route.push("/login")
-            }
+                router.push("/login")
+            },
+            getCurrentRoute
         }
     }
 }
@@ -67,6 +88,11 @@ export default {
         height: 24px;
         width: 24px;
         margin-top: 15px;
+    }
+
+    .el-breadcrumb {
+        float: left;
+        margin: 20px 0 0 20px;
     }
 }
 

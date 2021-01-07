@@ -33,9 +33,9 @@ const routes = [
         component: () => import('../views/StaticBox.vue'),
       },
       {
-        path: '/user/center',
-        name: 'center',
-        meta: {title: "用户中心"},
+        path: '/user/right',
+        name: 'right',
+        meta: {title: "权限管理"},
         component: () => import('../views/StaticBox.vue'),
       }
     ]
