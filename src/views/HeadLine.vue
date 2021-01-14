@@ -7,7 +7,7 @@
     <el-dropdown @visible-change="changeValue" style="float: right">
         <div class="user-item">
             <el-avatar size="50" :src="circleUrl"></el-avatar>
-            <span>admin </span>
+            <span>{{userName}} </span>
             <i class="el-icon-arrow-down" :class="{go:rotate , aa :!rotate}"></i>
         </div>
         <template #dropdown>
@@ -67,10 +67,12 @@ export default {
             changeValue,
             circleUrl,
             isCollapse: computed(() => store.state.isCollapse),
+            userName: computed(() => store.state.userName),
             // 访问一个 mutation
             setCollapse: () => store.commit("setCollapse"),
             backToLogin() {
-                // todo:清除session之类的
+                store.commit("setUserName", "")
+                sessionStorage.removeItem("token")
                 router.push("/login")
             },
             getCurrentRoute

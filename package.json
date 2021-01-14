@@ -11,6 +11,8 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.1-beta.11",
+    "gsap": "^3.6.0",
+    "qs": "^6.9.6",
     "svg-sprite-loader": "^5.2.1",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",

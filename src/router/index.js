@@ -30,7 +30,7 @@ const routes = [
         path: '/user/index',
         name: 'index',
         meta: {title: "用户管理"},
-        component: () => import('../views/StaticBox.vue'),
+        component: () => import('../views/WallE'),
       },
       {
         path: '/user/right',
@@ -51,6 +51,17 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.path === "/login") return next()
+  if (sessionStorage.getItem("token")) {
+    return next()
+  } else {
+    return next({
+      name: "login"
+    })
+  }
 })
 
 export default router
