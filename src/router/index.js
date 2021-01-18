@@ -30,7 +30,7 @@ const routes = [
         path: '/user/index',
         name: 'index',
         meta: {title: "用户管理"},
-        component: () => import('../views/WallE'),
+        component: () => import('../views/Users'),
       },
       {
         path: '/user/right',
@@ -54,6 +54,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  // 去login的路由直接放行，要不会死循环
   if (to.path === "/login") return next()
   if (sessionStorage.getItem("token")) {
     return next()
