@@ -5,9 +5,13 @@ var instance = axios.create({
     baseURL:'http://127.0.0.1:8080/api/v1/',//接口统一域名
     timeout: 6000                                                       //设置超时
 })
-//------------------- 一、请求拦截器 忽略
+// 请求拦截器
 instance.interceptors.request.use(function (config) {
-
+    // 拦截请求，添加token
+    const token = sessionStorage.getItem("token")
+    if (token) {
+        config.headers.Authorization = "Bearer " + token
+    }
     return config;
 }, function (error) {
     // 对请求错误做些什么
@@ -15,7 +19,7 @@ instance.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 
-//----------------- 二、响应拦截器 忽略
+// 响应拦截器
 instance.interceptors.response.use(function (response) {
 
     return response.data;

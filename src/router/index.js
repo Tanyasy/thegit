@@ -33,10 +33,10 @@ const routes = [
         component: () => import('../views/Users'),
       },
       {
-        path: '/user/right',
-        name: 'right',
-        meta: {title: "权限管理"},
-        component: () => import('../views/StaticBox.vue'),
+        path: '/user/payment',
+        name: 'payment',
+        meta: {title: "账单管理"},
+        component: () => import('../views/Payment'),
       }
     ]
   },

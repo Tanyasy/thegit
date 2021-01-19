@@ -19,31 +19,35 @@
             </template>
         </el-table-column>
         <el-table-column
-                prop="name"
-                label="用户名"
+                prop="counter_party"
+                label="交易方"
                 width="180">
             <template #default="scope">
-                <el-tag>{{scope.row.name}}</el-tag>
+                <el-tag>{{scope.row.counter_party}}</el-tag>
             </template>
         </el-table-column>
         <el-table-column
                 align="center"
-                prop="email"
-                label="邮箱"
-        width="250">
+                prop="product_name"
+                label="商品名称"
+                width="250">
         </el-table-column>
         <el-table-column
                 align="center"
-                prop="telephone"
-                label="手机号"
+                prop="payment"
+                label="收/支"
         width="250">
         </el-table-column>
         <el-table-column
                 prop="is_superuser"
-                label="是否是管理员"
+                label="金额"
         width="150">
             <template #default="scope">
-                <el-tag>{{scope.row.is_superuser?"是":"否"}}</el-tag>
+                <el-tag>
+                    <div class="money">
+                        {{scope.row.money}}
+                    </div>
+                </el-tag>
             </template>
         </el-table-column>
         <el-table-column
@@ -78,10 +82,10 @@
             })
 
             function getUsers(skip = 0, limit = 10) {
-                req('get', "users/?skip=" + skip + "&limit=" + limit).then(
+                req('get', "payments/?skip=" + skip + "&limit=" + limit).then(
                     (response) => {
                         // console.log(response)
-                        state.tableData = response.data
+                        state.tableData = response
                     }
                 )
             }
