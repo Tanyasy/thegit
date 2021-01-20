@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus';
+import locale from 'element-plus/lib/locale/lang/zh-cn'
 import 'element-plus/lib/theme-chalk/index.css';
 import App from './App.vue'
 import store from './store'
@@ -10,7 +11,7 @@ import './assets/icon/iconfont.css'
 import axios from "axios"
 
 const app = createApp(App)
-app.use(ElementPlus)
+app.use(ElementPlus, { locale })
 //全局注册组件
 app.component('svg-icon', SvgIcon)
 import './icons'
