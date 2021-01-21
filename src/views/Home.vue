@@ -28,6 +28,7 @@
             </el-header>
             <el-main>
                 <router-view />
+                <WallE/>
             </el-main>
         </el-container>
     </el-container>
@@ -36,6 +37,7 @@
 
 <script>
 import Header from "./HeadLine"
+import WallE from "./WallE";
 import {
     computed,
     reactive
@@ -50,7 +52,7 @@ import {
 export default {
     name: 'Home',
     components: {
-        Header
+        Header, WallE
     },
     setup() {
         // 获取store对象

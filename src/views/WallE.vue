@@ -1,5 +1,5 @@
 <template>
-    <div id="app" @mousemove="coordinates">
+    <div id="wall-e" @mousemove="coordinates">
         <p>Move your mouse or tap</p>
         <svg id="walle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 139.4 129.4">
             <defs>
@@ -362,8 +362,9 @@
 
 <style scoped>
     body {
-        width: 100vw;
-        height: 100vh;
+        /*width: 100vw;*/
+        /*height: 100vh;*/
+        height: 0;
         overflow: hidden;
         font-family: 'Montserrat', sans-serif;
         background: #23a9e0;
@@ -371,15 +372,21 @@
         -webkit-overflow-scrolling: touch;
     }
 
-    #app {
-        -webkit-tap-highlight-color: transparent;
+    #wall-e {
+        /*-webkit-tap-highlight-color: transparent;*/
     }
 
     svg {
-        width: 100vw;
-        height: 100vh;
-        max-height: 400px;
-        margin-left: 20vw;
+        width: 350px;
+        height: 350px;
+        /*max-height: 400px;*/
+        /*margin-left: 20vw;*/
+        position: fixed;
+        right: 0px;
+        bottom: 0px;
+        /*width: 100px;*/
+        /*height: 200px;*/
+
     }
 
     p {
