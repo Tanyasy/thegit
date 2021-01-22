@@ -1,6 +1,5 @@
 <template>
     <div class="body">
-        <span>时间:</span>
         <el-date-picker
                 v-model="timeList"
                 type="daterange"
@@ -21,12 +20,15 @@
                 v-model="dialogVisible"
                 width="30%"
                 :before-close="handleClose">
+              <el-radio v-model="source" label="alipay">支付宝</el-radio>
+            <el-radio v-model="source" label="weixinpay">微信</el-radio>
             <el-upload
                     class="upload"
                     drag
                     action="http://localhost:8080/api/v1/payments/file/"
                     :on-success="handleOnSuccess"
-                    multiple>
+                    multiple
+                    ref="uploadTarget">
                 <i class="el-icon-upload"></i>
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                 <template #tip>
@@ -67,7 +69,7 @@
             <el-table-column
                     prop="product_name"
                     label="商品名称&nbsp;&nbsp;|&nbsp;&nbsp;交易方"
-                    width="450">
+            >
                 <template #default="scope">
                     <div class="product_name">
                         {{ scope.row.product_name }}
@@ -80,7 +82,8 @@
             <el-table-column
                     align="right"
                     prop="money"
-                    label="金额">
+                    label="金额"
+                    width="150">
                 <template #default="scope">
                     <div class="money">
                         {{ (scope.row.payment=="支出"?"-":"+") + " " + scope.row.money.toFixed(2)}}
@@ -89,7 +92,8 @@
             </el-table-column>
             <el-table-column
                     align="right"
-                    label="操作">
+                    label="操作"
+                    width="150">
                 <template #default="scope">
                     <el-button
                             size="mini"
@@ -130,6 +134,8 @@
             const fileName = ref("")
             const dialogVisible = ref(false)
             const timeList = ref([])
+            const source = ref("alipay")
+            const uploadTarget = ref(null)
             const state = reactive({
                 currentPage: 0,
                 limit: 10,
@@ -210,8 +216,8 @@
                     (response) => {
                         console.log(response)
                         ElMessage.success({
-                        message: '删除数据成功',
-                        type: 'success'
+                            message: '删除数据成功',
+                            type: 'success'
                         });
                         getUsers(state.currentPage, state.limit, timeList.value)
                     }
@@ -230,16 +236,26 @@
 
             const handleImportData = () => {
                 const data = {
-                    file_name: fileName.value
+                    file_name: fileName.value,
+                    data_source: source.value
                 }
                 req('put', "payments/import/", JSON.stringify(data)).then(
                     (response) => {
-                        ElMessage.success({
-                        message: '成功导入'+response.total + '条数据',
-                        type: 'success'
-                        });
-                        dialogVisible.value = false
-                        getUsers(state.currentPage, state.limit, timeList.value)
+                        const total = response.total
+                        if (total === 0) {
+                            ElMessage.error({
+                                message: '数据已存在，不需要重复导入哦😘',
+                                type: 'error'
+                            })
+                        } else {
+                            ElMessage.success({
+                                message: '成功导入' + response.total + '条数据',
+                                type: 'success'
+                            })
+                            uploadTarget.value.clearFiles()
+                            dialogVisible.value = false
+                            getUsers(state.currentPage, state.limit, timeList.value)
+                        }
                     }
                 )
             }
@@ -261,8 +277,10 @@
             return {
                 timeList,
                 state,
+                source,
                 dialogVisible,
                 fileName,
+                uploadTarget,
                 dateFormat,
                 handleSizeChange,
                 handleCurrentChange,
@@ -315,5 +333,17 @@
     .money {
         font-size: 16px;
         font-weight: 400;
+    }
+
+
+    .el-dialog__body {
+        border-top: 1px solid rgba(0, 21, 41, .08);
+        /*box-shadow: 0 1px 4px rgba(0, 21, 41, .08);*/
+        padding: 30px 20px 20px 20px;
+
+        .el-upload-dragger {
+            width: 570px;
+            height: 180px;
+        }
     }
 </style>
