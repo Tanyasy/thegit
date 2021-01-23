@@ -13,6 +13,8 @@
                 :disabled-date="state.disabledDate"
         >
         </el-date-picker>
+
+        <!--账单数据导入功能-->
         <el-button type="primary" @click="dialogVisible = true">数据导入<i class="el-icon-upload el-icon--right"></i>
         </el-button>
         <el-dialog
@@ -20,7 +22,7 @@
                 v-model="dialogVisible"
                 width="30%"
                 :before-close="handleClose">
-              <el-radio v-model="source" label="alipay">支付宝</el-radio>
+            <el-radio v-model="source" label="alipay">支付宝</el-radio>
             <el-radio v-model="source" label="weixinpay">微信</el-radio>
             <el-upload
                     class="upload"
@@ -44,10 +46,44 @@
             </span>
             </template>
         </el-dialog>
+
+        <!--批量编辑功能-->
+        <el-button @click="editDialogVisible = true">批量编辑<i class="el-icon-edit el-icon--right"></i>
+        </el-button>
+        <el-dialog
+                title="批量编辑"
+                v-model="editDialogVisible"
+                width="30%"
+                :before-close="handleClose">
+            <span>交易类型: </span>
+            <el-select v-model="state.value" placeholder="请选择">
+                <el-option
+                        v-for="item in state.options"
+                        :key="item.id"
+                        :label="item.type_name"
+                        :value="item.id">
+                </el-option>
+            </el-select>
+            <template #footer>
+            <span class="dialog-footer">
+              <el-button @click="editDialogVisible = false">取 消</el-button>
+              <el-button type="primary" @click="handleEditData">修 改</el-button>
+            </span>
+            </template>
+        </el-dialog>
+
+
         <el-divider></el-divider>
         <el-table
+                ref="multipleTable"
                 :data="state.tableData"
-                style="width: 100%">
+                style="width: 100%"
+                @selection-change="handleSelectionChange">
+            <el-table-column
+                    type="selection"
+                    show-overflow-tooltip="true"
+            >
+            </el-table-column>
             <el-table-column v-if="show"
                              prop="id"
                              label="id"
@@ -133,7 +169,9 @@
         setup() {
             const fileName = ref("")
             const dialogVisible = ref(false)
+            const editDialogVisible = ref(false)
             const timeList = ref([])
+            const multipleTable = ref("")
             const source = ref("alipay")
             const uploadTarget = ref(null)
             const state = reactive({
@@ -141,6 +179,9 @@
                 limit: 10,
                 pageArray: [10, 20, 50, 100],
                 tableData: [],
+                tableSelectionData: [],
+                options: [],
+                value: "",
                 count: 0,
                 totalPage: 1,
                 defaultTime: [
@@ -260,8 +301,59 @@
                 )
             }
 
+            const handleSelectionChange = (val) => {
+                // 勾选时，将勾选项赋值给tableSelectionData
+                state.tableSelectionData = val
+            }
+
+            const handleEditData = () => {
+                if (state.tableSelectionData.length === 0 || state.value === "") {
+                    ElMessage.warning({
+                        message: '未勾选数据哦',
+                        type: 'warning'
+                    })
+                } else {
+                    state.tableSelectionData = state.tableSelectionData.map(
+                        (item) => {
+                            item.trade_type = state.value
+                            return item
+                        }
+                    )
+                    req('put', "payments/", JSON.stringify(state.tableSelectionData)).then(
+                    (response) => {
+                        const total = response.total
+                        if (total === 0) {
+                            ElMessage.error({
+                                message: '修改数据失败咯',
+                                type: 'error'
+                            })
+                        } else {
+                            ElMessage.success({
+                                message: '成功修改' + response.total + '条数据',
+                                type: 'success'
+                            })
+                            editDialogVisible.value = false
+                            getUsers(state.currentPage, state.limit, timeList.value)
+                        }
+                    }
+                    )
+                }
+
+
+            }
+
+            const getTypeOptions = () => {
+                req("get", "trade_type/").then(
+                    (response) => {
+                        state.options = response
+                    }
+                )
+
+            }
+
             onMounted(() => {
                 getUsers(state.currentPage, state.limit)
+                getTypeOptions()
             })
 
             // 监听器
@@ -279,14 +371,18 @@
                 state,
                 source,
                 dialogVisible,
+                editDialogVisible,
                 fileName,
                 uploadTarget,
+                multipleTable,
                 dateFormat,
                 handleSizeChange,
                 handleCurrentChange,
                 handleOnSuccess,
                 handleImportData,
-                handleDelete
+                handleDelete,
+                handleSelectionChange,
+                handleEditData
             }
         }
     }
