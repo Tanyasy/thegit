@@ -30,6 +30,7 @@
                     action="http://localhost:8080/api/v1/payments/file/"
                     :on-success="handleOnSuccess"
                     multiple
+                    :headers="state.headers"
                     ref="uploadTarget">
                 <i class="el-icon-upload"></i>
                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -62,7 +63,10 @@
                         :key="item.id"
                         :label="item.type_name"
                         :value="item.id">
+                    <!--                    <svg-icon :icon-class="item.type_name?item.type_name:'未知'" class-name="option-icon" />-->
+                    <!--                    <span style="float: left">{{ item.type_name }}</span>-->
                 </el-option>
+
             </el-select>
             <template #footer>
             <span class="dialog-footer">
@@ -74,6 +78,25 @@
 
 
         <el-divider></el-divider>
+        <div class="search">
+            <el-collapse-transition>
+                <div v-if="searchVisible" class="testshow">
+                    <div class="searchLineOne">
+                        <b>交易方:</b>
+                        <el-input autosize v-model="state.counterParty" placeholder="请输入交易方名称"></el-input>
+                    </div>
+                    <div class="searchLineTwo">
+                        <b>商品名称:</b>
+                        <el-input autosize v-model="state.productName" placeholder="请输入商品名称"></el-input>
+                        <el-button @click="startSearch">搜 索</el-button>
+                    </div>
+
+                </div>
+            </el-collapse-transition>
+            <i class="el-icon-caret-bottom" :class="{go:searchVisible , aa :!searchVisible}"></i>
+            <span @click="handleSearch">{{ searchVisible?"基本筛选":"高级筛选" }}</span>
+        </div>
+
         <el-table
                 ref="multipleTable"
                 :data="state.tableData"
@@ -84,10 +107,13 @@
                     show-overflow-tooltip="true"
             >
             </el-table-column>
-            <el-table-column v-if="show"
-                             prop="id"
-                             label="id"
-                             width="0">
+            <el-table-column
+                    prop="id"
+                    label="分类"
+                    width="55">
+                <template #default="scope">
+                    <svg-icon :icon-class="scope.row.type?scope.row.type.type_name:'未知'" class-name="card-panel-icon"/>
+                </template>
             </el-table-column>
             <el-table-column
                     prop="create_time"
@@ -170,6 +196,7 @@
             const fileName = ref("")
             const dialogVisible = ref(false)
             const editDialogVisible = ref(false)
+            const searchVisible = ref(false)
             const timeList = ref([])
             const multipleTable = ref("")
             const source = ref("alipay")
@@ -184,6 +211,8 @@
                 value: "",
                 count: 0,
                 totalPage: 1,
+                counterParty: "",
+                productName: "",
                 defaultTime: [
                     new Date(2000, 1, 1, 0, 0, 0),
                     new Date(2000, 2, 1, 23, 59, 59)
@@ -215,10 +244,13 @@
                 }],
                 disabledDate(time) {
                     return time.getTime() > Date.now()
-                }
+                },
+                headers: {
+                    Authorization: "Bearer " + sessionStorage.getItem('token')  //从cookie里获取token，并赋值  Authorization ，而不是token
+                },
             })
 
-            function getUsers(page = 0, limit = 10, timeList) {
+            function getUsers(page = 0, limit = 10, timeList, counterParty=null, productName=null) {
                 let url = ""
                 if (timeList && timeList.length > 0) {
                     const startTime = dayjs(timeList[0]).format('YYYY-MM-DDTHH:mm:ss')
@@ -227,6 +259,15 @@
                 } else {
                     url = "payments/?page=" + page + "&limit=" + limit
                 }
+
+                // 有则传入查询，没有则不查
+                if (counterParty) {
+                    url += "&counter_party=" + counterParty
+                }
+                if (productName) {
+                    url += "&product_name=" + productName
+                }
+
                 req('get', url).then(
                     (response) => {
                         // console.log(response)
@@ -320,22 +361,22 @@
                         }
                     )
                     req('put', "payments/", JSON.stringify(state.tableSelectionData)).then(
-                    (response) => {
-                        const total = response.total
-                        if (total === 0) {
-                            ElMessage.error({
-                                message: '修改数据失败咯',
-                                type: 'error'
-                            })
-                        } else {
-                            ElMessage.success({
-                                message: '成功修改' + response.total + '条数据',
-                                type: 'success'
-                            })
-                            editDialogVisible.value = false
-                            getUsers(state.currentPage, state.limit, timeList.value)
+                        (response) => {
+                            const total = response.total
+                            if (total === 0) {
+                                ElMessage.error({
+                                    message: '修改数据失败咯',
+                                    type: 'error'
+                                })
+                            } else {
+                                ElMessage.success({
+                                    message: '成功修改' + response.total + '条数据',
+                                    type: 'success'
+                                })
+                                editDialogVisible.value = false
+                                getUsers(state.currentPage, state.limit, timeList.value)
+                            }
                         }
-                    }
                     )
                 }
 
@@ -349,6 +390,24 @@
                     }
                 )
 
+            }
+
+            const handleSearch = () => {
+                console.log(searchVisible.value)
+                searchVisible.value = !searchVisible.value
+            }
+
+            const startSearch = () => {
+                if (state.counterParty === "" && state.productName === "") {
+                    ElMessage.warning(
+                        {
+                            message: '请输入关键字哦',
+                            type: 'warning'
+                        }
+                    )
+                } else {
+                    getUsers(state.currentPage, state.limit, timeList.value, state.counterParty, state.productName)
+                }
             }
 
             onMounted(() => {
@@ -372,6 +431,7 @@
                 source,
                 dialogVisible,
                 editDialogVisible,
+                searchVisible,
                 fileName,
                 uploadTarget,
                 multipleTable,
@@ -382,7 +442,9 @@
                 handleImportData,
                 handleDelete,
                 handleSelectionChange,
-                handleEditData
+                handleEditData,
+                handleSearch,
+                startSearch
             }
         }
     }
@@ -441,5 +503,60 @@
             width: 570px;
             height: 180px;
         }
+    }
+
+    .card-panel-icon {
+        /*float: left;*/
+        font-size: 30px;
+    }
+
+    .search {
+        font: 12px/1.5 tahoma, arial, \5b8b\4f53;
+
+        span, i {
+            float: right;
+            color: rgb(0, 170, 238);
+        }
+
+        i {
+            font-size: 20px;
+        }
+
+        span:hover {
+            cursor: pointer;
+            color: rgb(0, 136, 204);
+        }
+
+        .el-input {
+            border-radius: 1px;
+            display: inline-block;
+            width: 200px;
+        }
+
+        .searchLineOne {
+            margin: 10px 0;
+            b {
+                margin-right: 30px;
+            }
+        }
+
+        .searchLineTwo {
+            .el-input {
+                margin-left: 18px;
+                margin-right: 20px;
+            }
+            .el-button {
+                display: inline-flex;
+            }
+        }
+    }
+
+    .aa {
+        transition: all .2s;
+    }
+
+    .go {
+        transform: rotate(180deg);
+        transition: all .2s;
     }
 </style>
