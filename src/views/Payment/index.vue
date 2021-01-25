@@ -22,8 +22,10 @@
                 v-model="dialogVisible"
                 width="30%"
                 :before-close="handleClose">
-            <el-radio v-model="source" label="alipay">支付宝</el-radio>
-            <el-radio v-model="source" label="weixinpay">微信</el-radio>
+            <div class="searchChoice">
+                <el-radio v-model="source" label="alipay">支付宝</el-radio>
+                <el-radio v-model="source" label="weixinpay">微信</el-radio>
+            </div>
             <el-upload
                     class="upload"
                     drag
@@ -76,11 +78,19 @@
             </template>
         </el-dialog>
 
-
+        <!--重置功能-->
+        <el-button v-show="showReset" @click="reset" type="info" icon="el-icon-refresh-right" circle></el-button>
         <el-divider></el-divider>
         <div class="search">
             <el-collapse-transition>
                 <div v-if="searchVisible" class="testshow">
+                      <div class="searchType">
+                         <b>交易类型:</b>
+                        <el-radio-group v-model="state.filterOption" size="small">
+                          <el-radio-button v-for="option in state.options" :label="option.id" :key="option.type_flag">{{option.type_name}}</el-radio-button>
+                          <el-radio-button label=null>未知</el-radio-button>
+                        </el-radio-group>
+                      </div>
                     <div class="searchLineOne">
                         <b>交易方:</b>
                         <el-input autosize v-model="state.counterParty" placeholder="请输入交易方名称"></el-input>
@@ -143,9 +153,11 @@
             </el-table-column>
             <el-table-column
                     align="right"
-                    prop="money"
+                    prop="payment"
                     label="金额"
-                    width="150">
+                    width="150"
+                    :filters="[{ text: '支出', value: '支出' }, { text: '收入', value: '收入' }]"
+                    :filter-method="filterPayment">
                 <template #default="scope">
                     <div class="money">
                         {{ (scope.row.payment=="支出"?"-":"+") + " " + scope.row.money.toFixed(2)}}
@@ -185,7 +197,7 @@
 </template>
 
 <script>
-    import {ref, reactive, onMounted, watch} from "vue"
+    import {ref, reactive, onMounted, watch, computed} from "vue"
     import {ElMessage} from 'element-plus'
     import dayjs from "dayjs"
     import req from "../../http/http"
@@ -204,10 +216,11 @@
             const state = reactive({
                 currentPage: 0,
                 limit: 10,
-                pageArray: [10, 20, 50, 100],
+                pageArray: [10, 20, 50, 100, 500],
                 tableData: [],
                 tableSelectionData: [],
                 options: [],
+                filterOption: "",
                 value: "",
                 count: 0,
                 totalPage: 1,
@@ -250,7 +263,7 @@
                 },
             })
 
-            function getUsers(page = 0, limit = 10, timeList, counterParty=null, productName=null) {
+            function getUsers(page = 0, limit = 10, timeList, counterParty=null, productName=null, filterOption="") {
                 let url = ""
                 if (timeList && timeList.length > 0) {
                     const startTime = dayjs(timeList[0]).format('YYYY-MM-DDTHH:mm:ss')
@@ -268,9 +281,12 @@
                     url += "&product_name=" + productName
                 }
 
+                if (filterOption) {
+                    url += "&trade_type=" + filterOption
+                }
+
                 req('get', url).then(
                     (response) => {
-                        // console.log(response)
                         state.tableData = response.data
                         state.totalPage = response.total_page
                         state.count = response.count
@@ -379,8 +395,6 @@
                         }
                     )
                 }
-
-
             }
 
             const getTypeOptions = () => {
@@ -393,12 +407,11 @@
             }
 
             const handleSearch = () => {
-                console.log(searchVisible.value)
                 searchVisible.value = !searchVisible.value
             }
 
             const startSearch = () => {
-                if (state.counterParty === "" && state.productName === "") {
+                if (state.counterParty === "" && state.productName === "" && state.filterOption === "") {
                     ElMessage.warning(
                         {
                             message: '请输入关键字哦',
@@ -406,8 +419,19 @@
                         }
                     )
                 } else {
-                    getUsers(state.currentPage, state.limit, timeList.value, state.counterParty, state.productName)
+                    getUsers(state.currentPage, state.limit, timeList.value, state.counterParty, state.productName, state.filterOption)
                 }
+            }
+
+            const filterPayment = (value, row) => {
+                return row.payment === value;
+            }
+
+            const reset = () => {
+                timeList.value = []
+                state.counterParty = ""
+                state.productName = ""
+                state.filterOption = ""
             }
 
             onMounted(() => {
@@ -435,6 +459,9 @@
                 fileName,
                 uploadTarget,
                 multipleTable,
+                showReset: computed( ()=>{
+                    return  timeList.value.length !== 0 || state.counterParty || state.productName || state.filterOption
+                }),
                 dateFormat,
                 handleSizeChange,
                 handleCurrentChange,
@@ -444,7 +471,9 @@
                 handleSelectionChange,
                 handleEditData,
                 handleSearch,
-                startSearch
+                startSearch,
+                filterPayment,
+                reset
             }
         }
     }
@@ -466,6 +495,25 @@
 
         > .el-button {
             float: right;
+            margin-left: 10px;
+        }
+
+        > .is-circle {
+            background-color: white;
+            border-color: white;
+            color: #2b4b6b;
+            font-weight: 800;
+            font-size: 20px;
+            margin-top: -4px;
+        }
+
+        > .is-circle:hover {
+            background-color: #b3d4fc;
+            border-color: #b3d4fc;
+            color: white;
+            font-weight: 900;
+            font-size: 22px;
+
         }
     }
 
@@ -497,10 +545,14 @@
     .el-dialog__body {
         border-top: 1px solid rgba(0, 21, 41, .08);
         /*box-shadow: 0 1px 4px rgba(0, 21, 41, .08);*/
-        padding: 30px 20px 20px 20px;
+        padding: 20px 20px 20px 20px;
+
+        .searchChoice {
+            margin-bottom: 10px;
+        }
 
         .el-upload-dragger {
-            width: 570px;
+            width: 28vw;
             height: 180px;
         }
     }
@@ -533,14 +585,27 @@
             width: 200px;
         }
 
+        .searchType {
+            margin-bottom: 10px;
+            .el-radio-group {
+                margin-left: 18px;
+
+                span {
+                    color: black;
+                    font-weight: 600;
+                }
+            }
+        }
+
         .searchLineOne {
-            margin: 10px 0;
+
             b {
                 margin-right: 30px;
             }
         }
 
         .searchLineTwo {
+            margin-top: 10px;
             .el-input {
                 margin-left: 18px;
                 margin-right: 20px;
