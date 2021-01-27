@@ -21,7 +21,7 @@
                 title="账单数据导入"
                 v-model="dialogVisible"
                 width="30%"
-                :before-close="handleClose">
+                >
             <div class="searchChoice">
                 <el-radio v-model="source" label="alipay">支付宝</el-radio>
                 <el-radio v-model="source" label="weixinpay">微信</el-radio>
@@ -57,7 +57,7 @@
                 title="批量编辑"
                 v-model="editDialogVisible"
                 width="30%"
-                :before-close="handleClose">
+                >
             <span>交易类型: </span>
             <el-select v-model="state.value" placeholder="请选择">
                 <el-option

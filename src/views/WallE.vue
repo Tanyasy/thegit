@@ -382,7 +382,7 @@
         /*max-height: 400px;*/
         /*margin-left: 20vw;*/
         position: fixed;
-        right: 0px;
+        right: 10px;
         bottom: 0px;
         /*width: 100px;*/
         /*height: 200px;*/
