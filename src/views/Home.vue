@@ -60,6 +60,8 @@
         useRouter
     } from "vue-router"
 
+
+
     export default {
         name: 'Home',
         components: {
@@ -115,6 +117,8 @@
 
                 return false
             }
+
+
 
             onMounted(() => {
                 window.addEventListener('scroll', scrollToTop, true)
