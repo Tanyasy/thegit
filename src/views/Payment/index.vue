@@ -300,12 +300,12 @@
 
             const handleSizeChange = (size) => {
                 state.limit = size
-                getUsers(state.currentPage, state.limit, timeList.value)
+                getUsers(state.currentPage, state.limit, timeList.value, state.counterParty, state.productName, state.filterOption)
             }
 
             const handleCurrentChange = (pageNum) => {
                 state.currentPage = pageNum
-                getUsers(state.currentPage, state.limit, timeList.value)
+                getUsers(state.currentPage, state.limit, timeList.value, state.counterParty, state.productName, state.filterOption)
             }
 
             const handleDelete = (index, row) => {
@@ -317,7 +317,7 @@
                             message: '删除数据成功',
                             type: 'success'
                         });
-                        getUsers(state.currentPage, state.limit, timeList.value)
+                        getUsers(state.currentPage, state.limit, timeList.value, state.counterParty, state.productName, state.filterOption)
                     }
                 )
             }
@@ -390,7 +390,7 @@
                                     type: 'success'
                                 })
                                 editDialogVisible.value = false
-                                getUsers(state.currentPage, state.limit, timeList.value)
+                                getUsers(state.currentPage, state.limit, timeList.value, state.counterParty, state.productName, state.filterOption)
                             }
                         }
                     )
