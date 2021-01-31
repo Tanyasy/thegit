@@ -75,7 +75,6 @@
             let echarts = inject("ec");
             // 图表显示
             const showData = (myChart) => {
-
                 req("get", "payments/statistics").then(
                     (response) => {
                         // 绘制图表
@@ -94,7 +93,9 @@
                                 {type: 'bar'}
                             ]
                         });
-
+                        myChart.on('click', function (params) {
+                            console.log(params)
+                        })
                     }
                 )
             }
