@@ -54,62 +54,114 @@
             </div>
         </el-col>
     </el-row>
-    <div id="incomeChart"></div>
+    <div class="chart">
+        <div id="incomeChart" :style="{width: mainWidth}"></div>
+        <div id="detailChart" v-show="showDetail"></div>
+    </div>
 </template>
 
 <script>
     import CountTo from '../components/vueCounTo/vue-countTo'
     import req from "../http/http"
-    import {inject, onMounted} from "vue";
+    import {inject, onMounted, reactive, ref, computed} from "vue";
 
     export default {
         components: {
             CountTo
         },
-        methods: {
-            // handleSetLineChartData(type) {
-            //   this.$emit('handleSetLineChartData', type)
-            // }
-        },
         setup() {
             let echarts = inject("ec");
+            let showDetail = ref(false)
+            let mainOption = reactive({
+                legend: {},
+                tooltip: {},
+                dataset: {
+                    source: []
+                },
+                xAxis: {type: 'category'},
+                yAxis: {},
+                series: [
+                    {type: 'bar'},
+                    {type: 'bar'}
+                ]
+            })
+
+            let detailOption = reactive({
+                title: {
+                    text: '',
+                    subtext: '详情',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                },
+                series: [
+                    {
+                        name: '访问来源',
+                        type: 'pie',
+                        radius: '50%',
+                        data: [],
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            })
             // 图表显示
-            const showData = (myChart) => {
+            const showData = (incomeChart) => {
                 req("get", "payments/statistics").then(
                     (response) => {
                         // 绘制图表
-                        myChart.setOption({
-                            legend: {},
-                            tooltip: {},
-                            dataset: {
-                                source: response
-                            },
-                            xAxis: {type: 'category'},
-                            yAxis: {},
-                            // Declare several bar series, each will be mapped
-                            // to a column of dataset.source by default.
-                            series: [
-                                {type: 'bar'},
-                                {type: 'bar'}
-                            ]
-                        });
-                        myChart.on('click', function (params) {
-                            console.log(params)
-                        })
+                        mainOption.dataset.source = response
+                        incomeChart.setOption(mainOption);
+                    }
+                )
+            }
+
+            const handleDetailChart = (detailChart, select_date = "", payment = "") => {
+                req("get", "payments/statistics?select_date=" + select_date + "&payment=" + payment).then(
+                    (response) => {
+                        // 绘制图表
+                        detailOption.title.text = select_date + " " + payment
+                        detailOption.series[0].data = response
+                        detailChart.resize()
+                        detailChart.setOption(detailOption);
                     }
                 )
             }
 
             onMounted(() => {//需要获取到element,所以是onMounted的Hook
-                let myChart = echarts.init(document.getElementById("incomeChart"));
+                let incomeChart = echarts.init(document.getElementById("incomeChart"));
+                let detailChart = echarts.init(document.getElementById("detailChart"));
                 // 绘制图表
-                showData(myChart)
+                showData(incomeChart)
+                incomeChart.on('click', function (params) {
+                    showDetail.value = true
+                    incomeChart.resize({
+                        width: "1500px"
+                    })
+
+                    handleDetailChart(detailChart, params.name, params.seriesName)
+                })
                 window.onresize = function () {//自适应大小
-                    myChart.resize();
+                    incomeChart.resize();
                 };
             })
             return {
-                showData
+                mainOption,
+                detailOption,
+                showDetail,
+                mainWidth: computed(() => showDetail.value ? "70%" : "100%"),
+                showData,
+                handleDetailChart
             }
         }
     }
@@ -224,8 +276,21 @@
         }
     }
 
-    #incomeChart {
-        height: 600px;
-        width: 1500px;
+    .chart {
+        height: 500px;
+        box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
+        #incomeChart {
+            height: 500px;
+            width: 70%;
+            float: left;
+            margin-top: 20px;
+        }
+
+        #detailChart {
+            height: 500px;
+            width: 20%;
+            float: right;
+            padding: 50px;
+        }
     }
 </style>
