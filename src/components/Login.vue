@@ -23,6 +23,11 @@
                     <el-button type="primary" @click="login">登录</el-button>
                     <el-button type="info" @click="resetLoginForm">重置</el-button>
                 </el-form-item>
+
+                <div class="register">
+                    <el-link :underline="false">立即注册</el-link>
+                    <span>没有账号？ </span>
+                </div>
             </el-form>
         </div>
     </div>
@@ -104,7 +109,7 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
     .login_container {
         background-color: #2b4b6b;
         height: 100%;
@@ -117,7 +122,7 @@
         border-radius: 3px;
         position: absolute;
         left: 50%;
-        top: 50%;
+        top: 40%;
         /* // 将中心点移到方块的中心 */
         transform: translate(-50%, -50%);
     }
@@ -147,6 +152,7 @@
     .btns {
         display: flex;
         justify-content: flex-end;
+        margin-bottom: 0;
     }
 
     .login_form {
@@ -155,5 +161,27 @@
         width: 100%;
         padding: 0 30px;
         box-sizing: border-box;
+    }
+
+    .register {
+        margin: 10px 0;
+        height: 20px;
+        span, .el-link {
+
+            font-family: "SF Pro SC", "SF Pro Text", "SF Pro Icons", PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
+            font-size: 10px;
+            float: right;
+            color: rgba(0,0,0,0.4);
+            vertical-align: top;
+            font-weight: 500;
+        }
+        .el-link {
+            color: #55a532;
+        }
+
+        .el-link:hover {
+            color: #63a35c;
+            font-weight: 600;
+        }
     }
 </style>
