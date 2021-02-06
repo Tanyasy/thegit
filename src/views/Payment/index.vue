@@ -204,7 +204,10 @@
 
     export default {
         name: "index",
-        setup() {
+        props: {
+            visible: String
+        },
+        setup(props) {
             const fileName = ref("")
             const dialogVisible = ref(false)
             const editDialogVisible = ref(false)
@@ -435,6 +438,10 @@
             }
 
             onMounted(() => {
+                console.log(props)
+                if (props.visible) {
+                    dialogVisible.value=true
+                }
                 getUsers(state.currentPage, state.limit)
                 getTypeOptions()
             })

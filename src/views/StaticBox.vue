@@ -54,7 +54,11 @@
             </div>
         </el-col>
     </el-row>
-    <div class="chart">
+
+    <el-empty v-if="emptyData" descript="暂无数据">
+        <el-button type="primary" @click="routeToPayment">添加数据</el-button>
+    </el-empty>
+    <div v-else class="chart">
         <div id="incomeChart" :style="{width: mainWidth}"></div>
         <div id="detailChart" v-show="showDetail"></div>
     </div>
@@ -64,6 +68,7 @@
     import CountTo from '../components/vueCounTo/vue-countTo'
     import req from "../http/http"
     import {inject, onMounted, reactive, ref, computed} from "vue";
+    import { useRouter } from "vue-router"
 
     export default {
         components: {
@@ -71,18 +76,78 @@
         },
         setup() {
             let echarts = inject("ec");
+            let router = useRouter()
             let showDetail = ref(false)
+            let emptyData = ref(false)
             let mainOption = reactive({
                 legend: {},
                 tooltip: {},
+                grid:{
+                    left: '5%',   // 与容器左侧的距离
+                    right: '5%', // 与容器右侧的距离
+                    //top: '5%',   // 与容器顶部的距离
+                    //bottom: '5%', // 与容器底部的距离
+                },
                 dataset: {
                     source: []
                 },
                 xAxis: {type: 'category'},
                 yAxis: {},
                 series: [
-                    {type: 'bar'},
-                    {type: 'bar'}
+                    {
+                        type: 'bar',
+                        barWidth: 23,
+                        itemStyle: {
+                                normal: {
+                                    //柱形图圆角，顺时针左上，右上，右下，左下）
+                                    barBorderRadius: [12, 12, 12, 12],
+                                    //设置柱状图颜色渐变
+                                    color: new echarts.graphic.LinearGradient(
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        [
+                                            {
+                                                offset: 0,
+                                                color: "#f75d5d"
+                                            },
+                                            {
+                                                offset: 1,
+                                                color: "#f0caca"
+                                            }
+                                        ]
+                                    )
+                                }
+                            }
+                        },
+                    {
+                        type: 'bar',
+                        barWidth: 23,
+                        itemStyle: {
+                                normal: {
+                                    // 统一设置四个角的圆角大小
+                                    barBorderRadius: 12,
+                                    //设置柱状图颜色渐变
+                                    color: new echarts.graphic.LinearGradient(
+                                        0,
+                                        0,
+                                        0,
+                                        1,
+                                        [
+                                            {
+                                                offset: 0,
+                                                color: "#5ad9e8"
+                                            },
+                                            {
+                                                offset: 1,
+                                                color: "#caecf0"
+                                            }
+                                        ]
+                                    )
+                                }
+                            }
+                        }
                 ]
             })
 
@@ -119,9 +184,13 @@
             const showData = (incomeChart) => {
                 req("get", "payments/statistics").then(
                     (response) => {
-                        // 绘制图表
+                        if (response && response.length > 0) {
+                                                    // 绘制图表
                         mainOption.dataset.source = response
                         incomeChart.setOption(mainOption);
+                        } else {
+                            emptyData.value = true
+                        }
                     }
                 )
             }
@@ -136,6 +205,15 @@
                         detailChart.setOption(detailOption);
                     }
                 )
+            }
+
+            const routeToPayment = () => {
+                router.push({
+                    name: "payment",
+                    params: {
+                        visible: "y"
+                    }
+                })
             }
 
             onMounted(() => {//需要获取到element,所以是onMounted的Hook
@@ -159,9 +237,11 @@
                 mainOption,
                 detailOption,
                 showDetail,
+                emptyData,
                 mainWidth: computed(() => showDetail.value ? "70%" : "100%"),
                 showData,
-                handleDetailChart
+                handleDetailChart,
+                routeToPayment
             }
         }
     }
@@ -292,5 +372,10 @@
             float: right;
             padding: 50px;
         }
+    }
+
+    .el-empty {
+        font-family: "SF Pro SC", "SF Pro Text", "SF Pro Icons", PingFang SC, Lantinghei SC, Microsoft Yahei, Hiragino Sans GB, Microsoft Sans Serif, WenQuanYi Micro Hei, sans-serif;
+        font-size: 12px;
     }
 </style>

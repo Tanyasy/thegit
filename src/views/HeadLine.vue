@@ -6,9 +6,9 @@
     </el-breadcrumb>
     <el-dropdown @visible-change="changeValue" style="float: right">
         <div class="user-item">
-            <el-avatar size="50" :src="circleUrl"></el-avatar>
-            <span>{{userName}} </span>
             <i class="el-icon-arrow-down" :class="{go:rotate , aa :!rotate}"></i>
+            <span>{{userName}} </span>
+            <el-avatar size="50" :src="circleUrl"></el-avatar>
         </div>
         <template #dropdown>
             <el-dropdown-menu>
@@ -99,20 +99,19 @@ export default {
 }
 
 .user-item {
-    width: 110px;
+    /*width: 150px;*/
 
     &:hover {
         cursor: pointer;
     }
 
     span {
-        float: left;
-        margin-top: 20px;
+        float: right;
+        line-height: 55px;
         font-weight: 700;
     }
-
     i {
-        float: left;
+        float: right;
         margin-top: 22px;
         margin-left: 4px;
         font-size: 12px;

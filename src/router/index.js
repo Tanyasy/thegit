@@ -35,6 +35,8 @@ const routes = [
       {
         path: '/user/payment',
         name: 'payment',
+        // 设置props为true是，在用push的时候可以用params传递参数给props
+        props: true,
         meta: {title: "账单管理"},
         component: () => import('../views/Payment'),
       }
