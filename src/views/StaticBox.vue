@@ -223,8 +223,9 @@
                 showData(incomeChart)
                 incomeChart.on('click', function (params) {
                     showDetail.value = true
+                    let width = document.body.clientWidth * 0.65
                     incomeChart.resize({
-                        width: "1500px"
+                        width: width
                     })
 
                     handleDetailChart(detailChart, params.name, params.seriesName)

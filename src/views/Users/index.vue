@@ -1,6 +1,8 @@
 <template>
-    <el-table
+    <div class="table">
+            <el-table
             :data="state.tableData"
+            :header-cell-style="{background:'#eef1f6',color:'#606266'}"
             style="width: 100%">
         <el-table-column v-if="show"
                          prop="id"
@@ -10,7 +12,7 @@
         <el-table-column
                 prop="create_time"
                 label="日期"
-                width="300">
+                width="250">
             <template #default="scope">
                 <div>
                     <i class="el-icon-time"></i>
@@ -30,13 +32,19 @@
                 align="center"
                 prop="email"
                 label="邮箱"
-        width="250">
+        width="180">
         </el-table-column>
         <el-table-column
                 align="center"
                 prop="telephone"
                 label="手机号"
-        width="250">
+        width="180">
+        </el-table-column>
+        <el-table-column
+                align="center"
+                prop="role_name"
+                label="角色"
+        width="150">
         </el-table-column>
         <el-table-column
                 prop="is_superuser"
@@ -57,15 +65,28 @@
                 <el-button
                         size="mini"
                         type="danger"
-                        @click="handleDelete(scope.$index, scope.row)">删除
+                        @click="deleteUser(scope.$index, scope.row)">删除
                 </el-button>
             </template>
         </el-table-column>
     </el-table>
+                <div class="page">
+            <el-pagination
+                    background
+                    :page-sizes="state.pageArray"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    v-model:currentPage="state.currentPage"
+                    :total="state.count"
+            ></el-pagination>
+        </div>
+    </div>
 </template>
 
 <script>
     import {ref, reactive, onMounted} from "vue"
+    import { ElMessage } from "element-plus"
     import req from "../../http/http"
 
     export default {
@@ -74,7 +95,11 @@
             const currentPage = ref(0)
             const limit = ref(10)
             const state = reactive({
-                tableData: []
+                tableData: [],
+                currentPage: 0,
+                limit: 10,
+                count: 0,
+                pageArray: [10, 20, 50, 100, 500],
             })
 
             function getUsers(skip = 0, limit = 10) {
@@ -82,6 +107,21 @@
                     (response) => {
                         // console.log(response)
                         state.tableData = response.data
+                        state.count = response.count
+                    }
+                )
+            }
+
+            function deleteUser(index, item) {
+                console.log(index)
+                console.log(item.id)
+                req('delete', "users/" + item.id).then(
+                    (response) => {
+                        ElMessage.success({
+                            message: "删除用户" + response.name + "成功",
+                            type: "success"
+                        })
+                        getUsers()
                     }
                 )
             }
@@ -99,12 +139,27 @@
                 currentPage,
                 state,
                 limit,
-                dateFormat
+                dateFormat,
+                deleteUser
             }
         }
     }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    .table {
+        margin: 10px 20px;
+
+        border: 2px solid rgba(0, 0, 0, .1);
+        border-radius: 10px;
+        /*box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);*/
+        height: 680px;
+        padding: 10px;
+        /*background-color: rgba(0, 0, 0, .1);*/
+        .page {
+            margin-left: 50%;
+            margin-top: 20px;
+        }
+    }
 
 </style>
