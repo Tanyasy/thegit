@@ -24,7 +24,7 @@ const routes = [
     redirect: "/user/index",
     name: 'user',
     component: Home,
-    meta: {title: "用户中心", icon: "el-icon-menu"},
+    meta: {title: "用户中心", icon: "el-icon-user-solid"},
     children: [
       {
         path: '/user/index',
@@ -39,6 +39,29 @@ const routes = [
         props: true,
         meta: {title: "账单管理"},
         component: () => import('../views/Payment'),
+      }
+    ]
+  },
+  {
+    path: '/right',
+    redirect: "/right/role",
+    name: 'right',
+    component: Home,
+    meta: {title: "权限管理", icon: "el-icon-menu"},
+    children: [
+      {
+        path: '/right/role',
+        name: 'role',
+        meta: {title: "角色管理"},
+        component: () => import('../views/Roles'),
+      },
+      {
+        path: '/right/permission',
+        name: 'permission',
+        // 设置props为true是，在用push的时候可以用params传递参数给props
+        props: true,
+        meta: {title: "权限管理"},
+        component: () => import('../views/Permissions'),
       }
     ]
   },

@@ -6,13 +6,12 @@
                 :header-cell-style="{background:'#eef1f6',color:'#606266'}"
                 style="width: 100%"
         >
-            <el-table-column
-                    v-if="show"
-                    prop="id"
-                    label="id"
-                    width="0"
-            >
-            </el-table-column>
+<!--            <el-table-column-->
+<!--                    prop="id"-->
+<!--                    label="id"-->
+<!--                    width="250"-->
+<!--            >-->
+<!--            </el-table-column>-->
             <el-table-column
                     prop="create_time"
                     label="日期"
@@ -27,7 +26,7 @@
             </el-table-column>
             <el-table-column
                     prop="name"
-                    label="用户名"
+                    label="角色名"
                     width="180"
             >
                 <template #default="scope">
@@ -36,32 +35,12 @@
             </el-table-column>
             <el-table-column
                     align="center"
-                    prop="email"
-                    label="邮箱"
-                    width="180"
-            >
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="telephone"
-                    label="手机号"
-                    width="180"
-            >
-            </el-table-column>
-            <el-table-column
-                    align="center"
                     prop="role_name"
-                    label="角色"
-                    width="150"
-            >
-            </el-table-column>
-            <el-table-column
-                    prop="is_superuser"
-                    label="是否是管理员"
-                    width="150"
+                    label="权限"
+                    width="450"
             >
                 <template #default="scope">
-                    <el-tag>{{scope.row.is_superuser?"是":"否"}}</el-tag>
+                    {{showPermission(scope.row.permissions)}}
                 </template>
             </el-table-column>
             <el-table-column
@@ -77,7 +56,7 @@
 
                     <el-popconfirm
                             title="确定删除吗？"
-                            @confirm="deleteUser(scope.$index, scope.row)"
+                            @confirm="deleteRole(scope.$index, scope.row)"
                     >
                         <template #reference>
                             <el-button
@@ -98,14 +77,14 @@
             <div class="edit-name">
                 <span>用户名: </span>
               <el-input
-                prefix-icon="el-icon-user"
-                v-model="state.editUser.name">
+                prefix-icon="el-icon-Role"
+                v-model="state.editRole.name">
               </el-input>
             </div>
             <div class="edit-role">
                 <span>角色名: </span>
                 <el-select
-                        v-model="state.editUser.role_id"
+                        v-model="state.editRole.role_id"
                         placeholder="请选择"
                 >
                     <el-option
@@ -121,14 +100,14 @@
             <div class="edit-is-superuser">
                 <span>管理员: </span>
               <el-switch
-                  v-model="state.editUser.is_superuser"
+                  v-model="state.editRole.is_superuser"
                   active-color="#13ce66">
                 </el-switch>
             </div>
             <template #footer>
                 <span class="dialog-footer">
                   <el-button @click="editDialogVisible = false">取 消</el-button>
-                  <el-button type="primary" @click="updateUser">确 定</el-button>
+                  <el-button type="primary" @click="updateRole">确 定</el-button>
                 </span>
             </template>
 
@@ -164,7 +143,7 @@
                 itemList: [],
                 tableData: [],
                 value: "",
-                editUser: {
+                editRole: {
                     role_id: null,
                     is_active: true,
                     telephone: "",
@@ -179,56 +158,55 @@
                 pageArray: [5, 10, 20, 50, 100],
             });
 
-            function getUsers() {
+            function getRoles() {
                 req(
                     "get",
-                    "users/?page=" + state.currentPage + "&limit=" + state.limit
+                    "role?page=" + state.currentPage + "&limit=" + state.limit
                 ).then((response) => {
                     state.tableData = response.data
                     state.total = response.count
-                    editDialogVisible.value = false
                 });
             }
 
-            function updateUser() {
+            function updateRole() {
                 req(
                     "put",
-                    "users/",
-                    JSON.stringify(state.editUser)
+                    "role",
+                    JSON.stringify(state.editRole)
                 ).then((response) => {
                     ElMessage.success({
                         message: "修改用户" + response.name + "成功",
                         type: "success",
                     });
-                    getUsers(currentPage.value * limit.value, limit.value);
+                    getRoles(currentPage.value * limit.value, limit.value);
                 });
             }
 
-            function getRoles() {
-                req(
-                    "get",
-                    "role"
-                ).then((response) => {
-                    state.itemList = response
-                });
-
-            }
+            // function getRoles() {
+            //     req(
+            //         "get",
+            //         "role"
+            //     ).then((response) => {
+            //         state.itemList = response
+            //     });
+            //
+            // }
 
             function handleEdit(index, item) {
                 console.log(index);
-                state.editUser = item
+                state.editRole = item
                 editDialogVisible.value = true
             }
 
-            function deleteUser(index, item) {
+            function deleteRole(index, item) {
 
                 console.log(item.id);
-                req("delete", "users/" + item.id).then((response) => {
+                req("delete", "Roles/" + item.id).then((response) => {
                     ElMessage.success({
                         message: "删除用户" + response.name + "成功",
                         type: "success",
                     });
-                    getUsers();
+                    getRoles();
                 });
             }
 
@@ -238,19 +216,30 @@
 
             const handleSizeChange = (size) => {
                 state.limit = size;
-                getUsers();
+                getRoles();
             };
 
             const handleCurrentChange = (page) => {
                 if (page) {
                     state.currentPage = page;
-                    getUsers();
+                    getRoles();
                 }
             };
 
+            const showPermission = (permissionList) => {
+                    let permissionStr = ""
+
+                    for (const i in permissionList) {
+                        console.log(i)
+                        permissionStr += (permissionList[i].codename + ", ")
+                    }
+                    return permissionStr
+            }
+
+
             onMounted(() => {
-                getUsers(currentPage.value * limit.value, limit.value);
-                getRoles();
+                getRoles(currentPage.value * limit.value, limit.value);
+                // getRoles();
 
             });
 
@@ -262,12 +251,13 @@
                 editDialogVisible,
                 getRoles,
                 dateFormat,
-                deleteUser,
-                updateUser,
+                deleteRole,
+                updateRole,
                 handleEdit,
                 handleSizeChange,
                 handleCurrentChange,
-            };
+                showPermission
+            }
         },
     };
 </script>
@@ -303,7 +293,7 @@
                     width: 80%;
                 }
             }
-            .edit-is-superuser {
+            .edit-is-superRole {
                 .el-switch {
                     display: inline-flex;
                 }
