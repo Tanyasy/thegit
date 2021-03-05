@@ -1,4 +1,5 @@
 <template>
+    <el-button class="add-button" type="primary" @click="showAddDialog">新增权限</el-button>
     <div class="table">
         <el-table
                 stripe
@@ -6,13 +7,6 @@
                 :header-cell-style="{background:'#eef1f6',color:'#606266'}"
                 style="width: 100%"
         >
-            <el-table-column
-                    v-if="show"
-                    prop="id"
-                    label="id"
-                    width="0"
-            >
-            </el-table-column>
             <el-table-column
                     prop="create_time"
                     label="日期"
@@ -27,7 +21,7 @@
             </el-table-column>
             <el-table-column
                     prop="name"
-                    label="用户名"
+                    label="权限名"
                     width="180"
             >
                 <template #default="scope">
@@ -35,33 +29,12 @@
                 </template>
             </el-table-column>
             <el-table-column
-                    align="center"
-                    prop="email"
-                    label="邮箱"
-                    width="180"
-            >
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="telephone"
-                    label="手机号"
-                    width="180"
-            >
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="role_name"
-                    label="角色"
-                    width="150"
-            >
-            </el-table-column>
-            <el-table-column
-                    prop="is_superuser"
-                    label="是否是管理员"
+                    prop="codename"
+                    label="权限字段"
                     width="150"
             >
                 <template #default="scope">
-                    <el-tag>{{scope.row.is_superuser?"是":"否"}}</el-tag>
+                    <el-tag>{{scope.row.codename}}</el-tag>
                 </template>
             </el-table-column>
             <el-table-column
@@ -71,13 +44,13 @@
                 <template #default="scope">
                     <el-button
                             size="mini"
-                            @click="handleEdit(scope.$index, scope.row)"
+                            @click="showEditDialog(scope.row)"
                     >编辑
                     </el-button>
 
                     <el-popconfirm
                             title="确定删除吗？"
-                            @confirm="deleteUser(scope.$index, scope.row)"
+                            @confirm="deleteItem(scope.row)"
                     >
                         <template #reference>
                             <el-button
@@ -91,44 +64,28 @@
             </el-table-column>
         </el-table>
         <el-dialog
-                title="用户编辑"
+                :title="state.title"
                 v-model="editDialogVisible"
                 width="20%"
                 center>
             <div class="edit-name">
-                <span>用户名: </span>
+                <span>权限名称: </span>
               <el-input
                 prefix-icon="el-icon-user"
-                v-model="state.editUser.name">
+                v-model="state.editItem.name">
               </el-input>
             </div>
-            <div class="edit-role">
-                <span>角色名: </span>
-                <el-select
-                        v-model="state.editUser.role_id"
-                        placeholder="请选择"
-                >
-                    <el-option
-                            v-for="item in state.itemList"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id"
-                    >
-                    </el-option>
-                </el-select>
-            </div>
-
-            <div class="edit-is-superuser">
-                <span>管理员: </span>
-              <el-switch
-                  v-model="state.editUser.is_superuser"
-                  active-color="#13ce66">
-                </el-switch>
+            <div class="edit-code-name">
+                <span>权限字段: </span>
+              <el-input
+                prefix-icon="el-icon-user"
+                v-model="state.editItem.codename">
+              </el-input>
             </div>
             <template #footer>
                 <span class="dialog-footer">
                   <el-button @click="editDialogVisible = false">取 消</el-button>
-                  <el-button type="primary" @click="updateUser">确 定</el-button>
+                  <el-button type="primary" @click="handleSubmit">确 定</el-button>
                 </span>
             </template>
 
@@ -164,14 +121,9 @@
                 itemList: [],
                 tableData: [],
                 value: "",
-                editUser: {
-                    role_id: null,
-                    is_active: true,
-                    telephone: "",
-                    email: null,
-                    id: "",
-                    is_superuser: false,
-                    name: "",
+                title: "新增权限",
+                editItem: {
+
                 },
                 currentPage: 0,
                 limit: 10,
@@ -179,10 +131,10 @@
                 pageArray: [5, 10, 20, 50, 100],
             });
 
-            function getUsers() {
+            function getItems() {
                 req(
                     "get",
-                    "users/?page=" + state.currentPage + "&limit=" + state.limit
+                    "permission?page=" + state.currentPage + "&limit=" + state.limit
                 ).then((response) => {
                     state.tableData = response.data
                     state.total = response.count
@@ -190,47 +142,67 @@
                 });
             }
 
-            function updateUser() {
+            function addItem() {
                 req(
-                    "put",
-                    "users/",
-                    JSON.stringify(state.editUser)
+                    "post",
+                    "permission",
+                    JSON.stringify([state.editItem])
                 ).then((response) => {
                     ElMessage.success({
-                        message: "修改用户" + response.name + "成功",
+                        message: "新增权限" + response.name + "成功",
                         type: "success",
                     });
-                    getUsers(currentPage.value * limit.value, limit.value);
+                    getItems();
                 });
             }
 
-            function getRoles() {
+            function updateItem() {
                 req(
-                    "get",
-                    "role"
+                    "put",
+                    "permission",
+                    JSON.stringify(state.editItem)
                 ).then((response) => {
-                    state.itemList = response
+                    ElMessage.success({
+                        message: "修改权限" + response.name + "成功",
+                        type: "success",
+                    });
+                    getItems();
                 });
-
             }
 
-            function handleEdit(index, item) {
-                console.log(index);
-                state.editUser = item
+            function deleteItem(item) {
+                req("delete", "permission/" + item.id).then((response) => {
+                    ElMessage.success({
+                        message: "删除权限" + response.name + "成功",
+                        type: "success",
+                    });
+                    getItems();
+                });
+            }
+
+            function handleSubmit() {
+                if (state.title === "新增权限") {
+                    addItem()
+                } else {
+                    updateItem()
+                }
+            }
+
+            function showAddDialog() {
+                state.title = "新增权限"
+                state.editItem.name = ""
+                state.editItem.codename = ""
                 editDialogVisible.value = true
             }
 
-            function deleteUser(index, item) {
-
-                console.log(item.id);
-                req("delete", "users/" + item.id).then((response) => {
-                    ElMessage.success({
-                        message: "删除用户" + response.name + "成功",
-                        type: "success",
-                    });
-                    getUsers();
-                });
+            function showEditDialog(item) {
+                state.title = "编辑权限"
+                state.editItem.id = item.id
+                state.editItem.name = item.name
+                state.editItem.codename = item.codename
+                editDialogVisible.value = true
             }
+
 
             const dateFormat = (dateStr) => {
                 return dateStr.replace("T", " ");
@@ -238,20 +210,18 @@
 
             const handleSizeChange = (size) => {
                 state.limit = size;
-                getUsers();
+                getItems();
             };
 
             const handleCurrentChange = (page) => {
                 if (page) {
                     state.currentPage = page;
-                    getUsers();
+                    getItems();
                 }
             };
 
             onMounted(() => {
-                getUsers(currentPage.value * limit.value, limit.value);
-                getRoles();
-
+                getItems();
             });
 
             return {
@@ -260,11 +230,11 @@
                 limit,
                 visible,
                 editDialogVisible,
-                getRoles,
+                deleteItem,
+                showAddDialog,
+                showEditDialog,
                 dateFormat,
-                deleteUser,
-                updateUser,
-                handleEdit,
+                handleSubmit,
                 handleSizeChange,
                 handleCurrentChange,
             };
@@ -292,22 +262,18 @@
             span {
                 margin-right: 10px;
             }
-             .edit-name {
-                .el-input {
-                    width: 80%;
+
+            .el-input {
+                    width: 75%;
                 }
-                }
-            .edit-role {
-                margin: 15px 0;
-                .el-select {
-                    width: 80%;
-                }
-            }
-            .edit-is-superuser {
-                .el-switch {
-                    display: inline-flex;
-                }
-            }
+            .edit-name {
+                 margin-bottom: 10px;
+
+             }
         }
+    }
+
+    .add-button {
+        margin-left: 20px;
     }
 </style>
