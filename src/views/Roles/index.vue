@@ -1,4 +1,5 @@
 <template>
+    <el-button class="add-button" type="primary" @click="showAddDialog">新增角色</el-button>
     <div class="table">
         <el-table
                 stripe
@@ -6,12 +7,6 @@
                 :header-cell-style="{background:'#eef1f6',color:'#606266'}"
                 style="width: 100%"
         >
-<!--            <el-table-column-->
-<!--                    prop="id"-->
-<!--                    label="id"-->
-<!--                    width="250"-->
-<!--            >-->
-<!--            </el-table-column>-->
             <el-table-column
                     prop="create_time"
                     label="日期"
@@ -50,13 +45,13 @@
                 <template #default="scope">
                     <el-button
                             size="mini"
-                            @click="handleEdit(scope.$index, scope.row)"
+                            @click="showEditDialog(scope.row)"
                     >编辑
                     </el-button>
 
                     <el-popconfirm
                             title="确定删除吗？"
-                            @confirm="deleteRole(scope.$index, scope.row)"
+                            @confirm="deleteItem(scope.row)"
                     >
                         <template #reference>
                             <el-button
@@ -70,44 +65,28 @@
             </el-table-column>
         </el-table>
         <el-dialog
-                title="用户编辑"
+                :title="state.title"
                 v-model="editDialogVisible"
-                width="20%"
+                width="32%"
                 center>
             <div class="edit-name">
-                <span>用户名: </span>
-              <el-input
-                prefix-icon="el-icon-Role"
-                v-model="state.editRole.name">
-              </el-input>
+                <span>角色名称: </span>
+                <el-input
+                        prefix-icon="el-icon-user"
+                        v-model="state.editItem.name">
+                </el-input>
             </div>
-            <div class="edit-role">
-                <span>角色名: </span>
-                <el-select
-                        v-model="state.editRole.role_id"
-                        placeholder="请选择"
-                >
-                    <el-option
-                            v-for="item in state.itemList"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id"
-                    >
-                    </el-option>
-                </el-select>
-            </div>
-
-            <div class="edit-is-superuser">
-                <span>管理员: </span>
-              <el-switch
-                  v-model="state.editRole.is_superuser"
-                  active-color="#13ce66">
-                </el-switch>
-            </div>
+            <el-transfer
+                    v-model="state.itemIDList"
+                    :props="{
+                      key: 'name',
+                      label: 'name'
+                    }"
+                    :data="state.itemList"/>
             <template #footer>
                 <span class="dialog-footer">
                   <el-button @click="editDialogVisible = false">取 消</el-button>
-                  <el-button type="primary" @click="updateRole">确 定</el-button>
+                  <el-button type="primary" @click="handleSubmit">确 定</el-button>
                 </span>
             </template>
 
@@ -141,106 +120,137 @@
             const editDialogVisible = ref(false);
             const state = reactive({
                 itemList: [],
+                itemIDList: [],
                 tableData: [],
                 value: "",
-                editRole: {
-                    role_id: null,
-                    is_active: true,
-                    telephone: "",
-                    email: null,
-                    id: "",
-                    is_superuser: false,
-                    name: "",
-                },
+                title: "新增角色",
+
+                editItem: {},
                 currentPage: 0,
                 limit: 10,
                 total: 0,
                 pageArray: [5, 10, 20, 50, 100],
             });
 
-            function getRoles() {
+            function getItems() {
                 req(
                     "get",
                     "role?page=" + state.currentPage + "&limit=" + state.limit
                 ).then((response) => {
                     state.tableData = response.data
                     state.total = response.count
+                    editDialogVisible.value = false
                 });
             }
 
-            function updateRole() {
+            function addItem() {
+                req(
+                    "post",
+                    "role",
+                    JSON.stringify([state.editItem])
+                ).then((response) => {
+                    ElMessage.success({
+                        message: "新增角色" + response.name + "成功",
+                        type: "success",
+                    });
+                    getItems();
+                });
+            }
+
+            function updateItem() {
                 req(
                     "put",
                     "role",
-                    JSON.stringify(state.editRole)
+                    JSON.stringify(state.editItem)
                 ).then((response) => {
                     ElMessage.success({
-                        message: "修改用户" + response.name + "成功",
+                        message: "修改角色" + response.name + "成功",
                         type: "success",
                     });
-                    getRoles(currentPage.value * limit.value, limit.value);
+                    getItems();
                 });
             }
 
-            // function getRoles() {
-            //     req(
-            //         "get",
-            //         "role"
-            //     ).then((response) => {
-            //         state.itemList = response
-            //     });
-            //
-            // }
+            function deleteItem(item) {
+                req("delete", "role/" + item.id).then((response) => {
+                    ElMessage.success({
+                        message: "删除角色" + response.name + "成功",
+                        type: "success",
+                    });
+                    getItems();
+                });
+            }
 
-            function handleEdit(index, item) {
-                console.log(index);
-                state.editRole = item
+            function getPermission() {
+                req("get", "permission").then((response) => {
+                    state.itemList = response.data
+                });
+            }
+
+            function handleSubmit() {
+                if (state.title === "新增角色") {
+                    addItem()
+                } else {
+                    updateItem()
+                }
+            }
+
+            function getIds(itemList) {
+                let result = []
+                itemList.forEach((item) => {
+                    result.push(item.name)
+                })
+                return result
+            }
+
+            function showAddDialog() {
+                state.title = "新增角色"
+                state.editItem.name = ""
+                state.editItem.codename = ""
                 editDialogVisible.value = true
             }
 
-            function deleteRole(index, item) {
+            function showEditDialog(item) {
+                state.title = "编辑角色"
+                state.editItem.id = item.id
+                state.editItem.name = item.name
+                state.editItem.codename = item.codename
+                state.itemIDList = getIds(item.permissions)
 
-                console.log(item.id);
-                req("delete", "Roles/" + item.id).then((response) => {
-                    ElMessage.success({
-                        message: "删除用户" + response.name + "成功",
-                        type: "success",
-                    });
-                    getRoles();
-                });
+                editDialogVisible.value = true
             }
+
 
             const dateFormat = (dateStr) => {
                 return dateStr.replace("T", " ");
             };
 
+
             const handleSizeChange = (size) => {
                 state.limit = size;
-                getRoles();
+                getItems();
             };
 
             const handleCurrentChange = (page) => {
                 if (page) {
                     state.currentPage = page;
-                    getRoles();
+                    getItems();
                 }
             };
 
             const showPermission = (permissionList) => {
-                    let permissionStr = ""
+                let permissionStr = ""
 
-                    for (const i in permissionList) {
-                        console.log(i)
-                        permissionStr += (permissionList[i].codename + ", ")
-                    }
-                    return permissionStr
+                for (const i in permissionList) {
+                    permissionStr += (permissionList[i].codename + ", ")
+                }
+                return permissionStr
             }
 
 
             onMounted(() => {
-                getRoles(currentPage.value * limit.value, limit.value);
-                // getRoles();
-
+                getItems();
+                getPermission();
             });
 
             return {
@@ -249,14 +259,15 @@
                 limit,
                 visible,
                 editDialogVisible,
-                getRoles,
+                deleteItem,
+                showAddDialog,
+                showEditDialog,
                 dateFormat,
-                deleteRole,
-                updateRole,
-                handleEdit,
+                handleSubmit,
                 handleSizeChange,
                 handleCurrentChange,
-                showPermission
+                showPermission,
+                getIds
             }
         },
     };
@@ -282,22 +293,19 @@
             span {
                 margin-right: 10px;
             }
-             .edit-name {
-                .el-input {
-                    width: 80%;
-                }
-                }
-            .edit-role {
-                margin: 15px 0;
-                .el-select {
-                    width: 80%;
-                }
+
+            .el-input {
+                width: 75%;
             }
-            .edit-is-superRole {
-                .el-switch {
-                    display: inline-flex;
-                }
+
+            .edit-name {
+                margin-bottom: 10px;
+
             }
         }
+    }
+
+    .add-button {
+        margin-left: 20px;
     }
 </style>
