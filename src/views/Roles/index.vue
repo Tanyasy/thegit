@@ -68,6 +68,7 @@
                 :title="state.title"
                 v-model="editDialogVisible"
                 width="32%"
+
                 center>
             <div class="edit-name">
                 <span>角色名称: </span>
@@ -77,9 +78,9 @@
                 </el-input>
             </div>
             <el-transfer
-                    v-model="state.itemIDList"
+                    v-model="itemIDList"
                     :props="{
-                      key: 'name',
+                      key: 'id',
                       label: 'name'
                     }"
                     :data="state.itemList"/>
@@ -117,6 +118,7 @@
             const currentPage = ref(0);
             const limit = ref(10);
             const visible = ref(false);
+            const itemIDList = ref([]);
             const editDialogVisible = ref(false);
             const state = reactive({
                 itemList: [],
@@ -198,7 +200,7 @@
             function getIds(itemList) {
                 let result = []
                 itemList.forEach((item) => {
-                    result.push(item.name)
+                    result.push(item.id)
                 })
                 return result
             }
@@ -215,7 +217,7 @@
                 state.editItem.id = item.id
                 state.editItem.name = item.name
                 state.editItem.codename = item.codename
-                state.itemIDList = getIds(item.permissions)
+                itemIDList.value = getIds(item.permissions)
 
                 editDialogVisible.value = true
             }
@@ -258,6 +260,7 @@
                 state,
                 limit,
                 visible,
+                itemIDList,
                 editDialogVisible,
                 deleteItem,
                 showAddDialog,

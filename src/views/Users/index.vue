@@ -209,7 +209,7 @@
                     "get",
                     "role"
                 ).then((response) => {
-                    state.itemList = response
+                    state.itemList = response.data
                 });
 
             }
