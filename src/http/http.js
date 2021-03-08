@@ -1,5 +1,6 @@
 import axios from "axios";
 import router from "../router"
+import {ElMessage} from "element-plus";
 
 
 //创建axios的一个实例
@@ -26,8 +27,13 @@ instance.interceptors.response.use(function (response) {
     return response.data;
 }, function (error) {
     // 拦截403请求，说明session失效，跳转到login界面
-    if (403 === error.response.status) {
+    if (401 === error.response.status) {
         router.push("/login")
+    } else if (403 === error.response.status) {
+        ElMessage.error({
+            message: "抱歉，无权限访问",
+            type: "error"
+        })
     }
     return Promise.reject(error);
 });

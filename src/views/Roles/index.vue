@@ -29,10 +29,10 @@
                 </template>
             </el-table-column>
             <el-table-column
-                    align="center"
                     prop="role_name"
                     label="权限"
-                    width="450"
+                    width="550"
+                    show-overflow-tooltip
             >
                 <template #default="scope">
                     {{showPermission(scope.row.permissions)}}
@@ -78,7 +78,7 @@
                 </el-input>
             </div>
             <el-transfer
-                    v-model="itemIDList"
+                    v-model="state.itemIDList"
                     :props="{
                       key: 'id',
                       label: 'name'
@@ -118,7 +118,6 @@
             const currentPage = ref(0);
             const limit = ref(10);
             const visible = ref(false);
-            const itemIDList = ref([]);
             const editDialogVisible = ref(false);
             const state = reactive({
                 itemList: [],
@@ -148,8 +147,8 @@
             function addItem() {
                 req(
                     "post",
-                    "role",
-                    JSON.stringify([state.editItem])
+                    "role/one",
+                    JSON.stringify(state.editItem)
                 ).then((response) => {
                     ElMessage.success({
                         message: "新增角色" + response.name + "成功",
@@ -161,8 +160,8 @@
 
             function updateItem() {
                 req(
-                    "put",
-                    "role",
+                    "post",
+                    "role/one",
                     JSON.stringify(state.editItem)
                 ).then((response) => {
                     ElMessage.success({
@@ -190,6 +189,7 @@
             }
 
             function handleSubmit() {
+                state.editItem.permissions = state.itemIDList
                 if (state.title === "新增角色") {
                     addItem()
                 } else {
@@ -207,8 +207,10 @@
 
             function showAddDialog() {
                 state.title = "新增角色"
+                state.editItem.id = ""
                 state.editItem.name = ""
                 state.editItem.codename = ""
+                state.itemIDList = []
                 editDialogVisible.value = true
             }
 
@@ -217,7 +219,7 @@
                 state.editItem.id = item.id
                 state.editItem.name = item.name
                 state.editItem.codename = item.codename
-                itemIDList.value = getIds(item.permissions)
+                state.itemIDList = getIds(item.permissions)
 
                 editDialogVisible.value = true
             }
@@ -244,9 +246,9 @@
                 let permissionStr = ""
 
                 for (const i in permissionList) {
-                    permissionStr += (permissionList[i].codename + ", ")
+                    permissionStr += (permissionList[i].name + " | ")
                 }
-                return permissionStr
+                return permissionStr.slice(0, -2)
             }
 
 
@@ -260,7 +262,6 @@
                 state,
                 limit,
                 visible,
-                itemIDList,
                 editDialogVisible,
                 deleteItem,
                 showAddDialog,
