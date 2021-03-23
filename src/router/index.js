@@ -39,6 +39,14 @@ const routes = [
         props: true,
         meta: {title: "账单管理"},
         component: () => import('../views/Payment'),
+      },
+      {
+        path: '/user/todoList',
+        name: 'todoList',
+        // 设置props为true是，在用push的时候可以用params传递参数给props
+        props: true,
+        meta: {title: "待办事项"},
+        component: () => import('../views/TodoList'),
       }
     ]
   },
