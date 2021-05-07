@@ -31,6 +31,12 @@ const routes = [
         name: 'car',
         meta: {title: "车辆信息"},
         component: () => import('../views/CarInfoManage'),
+      },
+      {
+        path: '/data/user',
+        name: 'user',
+        meta: {title: "用户信息"},
+        component: () => import('../views/Users'),
       }
     ]
   },

@@ -176,7 +176,7 @@
     <el-dialog
             :title="state.title"
             v-model="editDialogVisible"
-            width="22%"
+            width="400px"
             center>
         <div class="edit-name">
             <span>车型: </span>
@@ -465,12 +465,6 @@
                 }
             };
 
-            const getTypeOptions = () => {
-                req("get", "trade_type/").then((response) => {
-                    state.options = response;
-                });
-            };
-
             const handleSearch = () => {
                 searchVisible.value = !searchVisible.value;
             };
@@ -533,13 +527,11 @@
             }
 
             onMounted(() => {
-
                 getCars(
                     state.name,
                     state.currentPage,
                     state.limit
                 );
-                getTypeOptions();
             });
 
             // 监听器
@@ -703,7 +695,7 @@
 
         .el-input {
             float: right;
-            width: 80%;
+            width: 270px;
         }
 
         .edit-name {

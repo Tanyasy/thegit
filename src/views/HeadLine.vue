@@ -73,6 +73,7 @@ export default {
             backToLogin() {
                 store.commit("setUserName", "");
                 store.commit("settableData", []);
+                store.commit("setTikTokName", "");
                 sessionStorage.removeItem("token");
                 router.push("/login")
             },

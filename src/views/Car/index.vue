@@ -6,7 +6,7 @@
         <!--<el-divider></el-divider>-->
 
         <div class="mid">
-            <p class="mid-icons">抖音名</p>
+            <p class="mid-icons">{{tikTokName}}</p>
             <p class="mid-message">将车型打公屏上 8秒出车价</p>
         </div>
         <el-table
@@ -108,10 +108,8 @@
 <script>
     import {ref, reactive, onMounted, computed} from "vue";
     import {ElMessage} from "element-plus";
-    // import dayjs from "dayjs";
     import req from "../../http/http";
     import {useStore} from "vuex";
-
     export default {
         name: "index",
         props: {
@@ -308,6 +306,7 @@
                 uploadTarget,
                 multipleTable,
                 tableData: computed(() => store.state.tableData),
+                tikTokName: computed(() => store.state.tikTokName),
                 showReset: computed(() => {
                     return (
                         timeList.value.length !== 0 ||

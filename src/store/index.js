@@ -4,6 +4,7 @@ export default createStore({
   state: {
     isCollapse: false,
     userName: "",
+    tikTokName: "",
     tableData: []
   },
   mutations: {
@@ -15,6 +16,9 @@ export default createStore({
     },
     settableData(state, tmp) {
       state.tableData = tmp
+    },
+    setTikTokName(state, tmp) {
+      state.tikTokName = tmp
     }
   },
   actions: {

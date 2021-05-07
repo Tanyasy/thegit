@@ -83,10 +83,10 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item prop="telephone">
+        <el-form-item prop="tiktok_name">
           <el-input
             prefix-icon="iconfont icon-extradouyin"
-            v-model="registerForm.telephone"
+            v-model="registerForm.tiktok_name"
             placeholder="请输入抖音名"
           ></el-input>
         </el-form-item>
@@ -170,7 +170,7 @@ export default {
 
     const registerForm = reactive({
       name: "",
-      telephone: "",
+      tiktok_name: "",
       password: "",
     });
     const registerFormRules = readonly({
@@ -189,7 +189,7 @@ export default {
           trigger: "blur",
         },
       ],
-      telephone: [
+      tiktok_name: [
         // trigger定义验证时机，blur表示失去焦点时验证
         {
           required: true,
@@ -237,6 +237,7 @@ export default {
           .then((response) => {
             sessionStorage.setItem("token", response.access_token);
             store.commit("setUserName", username);
+            store.commit("setTikTokName", response.tiktok_name);
             ElMessage.success({
               message: "登录成功了٩(๑>◡<๑)۶ ，欢迎您，" + username,
               type: "success",
@@ -286,7 +287,7 @@ export default {
               400 === error.response.status
             ) {
               ElMessage.error({
-                message: "用户名或手机号已存在咯，请确认下(╥╯^╰╥)",
+                message: "用户名已存在咯，请确认下(╥╯^╰╥)",
                 type: "error",
               });
             } else {

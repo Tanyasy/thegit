@@ -3,7 +3,8 @@
         <el-table
                 stripe
                 :data="state.tableData"
-                :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                :cell-style="rowClass"
+                :header-cell-style="headClass"
                 style="width: 100%"
         >
             <el-table-column
@@ -43,8 +44,8 @@
             </el-table-column>
             <el-table-column
                     align="center"
-                    prop="telephone"
-                    label="手机号"
+                    prop="tiktok_name"
+                    label="抖音号"
                     width="180"
             >
             </el-table-column>
@@ -167,7 +168,7 @@
                 editUser: {
                     role_id: null,
                     is_active: true,
-                    telephone: "",
+                    tiktok_name: "",
                     email: null,
                     id: "",
                     is_superuser: false,
@@ -248,6 +249,14 @@
                 }
             };
 
+            const headClass = () => {
+                return "background-color: rgb(35, 33, 38);color: white;font:600 18px/1.5 tahoma, arial, Microsoft Yahei;border-color: rgb(133, 131, 136)"
+            };
+
+            const rowClass = () => {
+                return "background-color: rgb(35, 33, 38);color: rgb(255,255,255,0.8);font:500 15px/1.5 tahoma, arial, Microsoft Yahei;border-color: rgb(133, 131, 136)"
+            };
+
             onMounted(() => {
                 getUsers(currentPage.value * limit.value, limit.value);
                 getRoles();
@@ -267,6 +276,8 @@
                 handleEdit,
                 handleSizeChange,
                 handleCurrentChange,
+                headClass,
+                rowClass
             };
         },
     };
