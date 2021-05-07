@@ -71,8 +71,8 @@ export default {
             // 访问一个 mutation
             setCollapse: () => store.commit("setCollapse"),
             backToLogin() {
-                store.commit("setUserName", "")
-                sessionStorage.removeItem("token")
+                store.commit("setUserName", "");
+                sessionStorage.removeItem("token");
                 router.push("/login")
             },
             getCurrentRoute
@@ -84,6 +84,7 @@ export default {
 <style lang="scss" scoped>
 .head {
     height: 100%;
+    background-color: black;
 
     .svg-icon {
         float: left;

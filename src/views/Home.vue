@@ -31,7 +31,7 @@
                 </el-header>
                 <el-main>
                     <router-view/>
-                    <WallE/>
+                    <!--<WallE/>-->
                 </el-main>
                 <div class="back-top">
                     <el-button v-show="goTopShow" @click="backTop" type="info" icon="el-icon-caret-top"
@@ -46,7 +46,7 @@
 
 <script>
     import Header from "./HeadLine"
-    import WallE from "./WallE";
+    // import WallE from "./WallE";
     import {
         computed,
         reactive,
@@ -65,7 +65,7 @@
     export default {
         name: 'Home',
         components: {
-            Header, WallE
+            Header
         },
         setup() {
             // 获取store对象
@@ -153,6 +153,9 @@
     .el-header {
         /* border-bottom: 1px solid gray; */
         box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+    }
+    .el-main {
+        background-color: rgb(35, 33, 38);
     }
 
     .el-menu-vertical {

@@ -34,14 +34,15 @@
             v-model="loginForm.password"
             :type="pwdType"
             @keyup.enter="login"
+            show-password
           >
-            <template v-slot:suffix>
-              <i
-                class="el-icon-view"
-                @mousedown="showPwd"
-                @mouseup="showPwd"
-              ></i>
-            </template>
+            <!--<template v-slot:suffix>-->
+              <!--<i-->
+                <!--class="el-icon-view"-->
+                <!--@mousedown="showPwd"-->
+                <!--@mouseup="showPwd"-->
+              <!--&gt;</i>-->
+            <!--</template>-->
           </el-input>
         </el-form-item>
         <!-- 登录和重置 -->

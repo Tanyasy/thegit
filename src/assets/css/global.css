@@ -8,4 +8,34 @@ html, body, #app {
     height: 100%;
     margin: 0;
     padding: 0;
-  }
+
+}
+
+.el-input__inner {
+    background-color: rgb(35, 33, 38);
+    color: white;
+}
+
+.el-form-item .el-input__inner {
+    background-color: white;
+    color: black;
+}
+
+.el-dialog {
+    background: rgb(28, 28, 30);
+
+}
+
+
+.el-dialog .el-dialog__header span {
+    color: white;
+}
+
+.el-dialog .el-dialog__header {
+    background: black;
+}
+
+.el-dialog .el-dialog__body {
+    background: rgb(28, 28, 30);
+    color: white;
+}

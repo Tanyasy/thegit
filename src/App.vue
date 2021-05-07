@@ -7,8 +7,8 @@
 
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
-import * as echarts from 'echarts'
-import { provide } from 'vue'
+// import * as echarts from 'echarts'
+// import { provide } from 'vue'
 
 export default {
   name: 'app',
@@ -27,9 +27,9 @@ export default {
       sessionStorage.setItem("store", JSON.stringify(this.$store.state))
     })
   },
-  setup() {
-    provide('ec',echarts)
-  }
+  // setup() {
+  //   provide('ec',echarts)
+  // }
 }
 </script>
 

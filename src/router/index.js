@@ -14,62 +14,23 @@ const routes = [
       {
         path: '/home',
         name: 'home',
-        component: () => import('../views/StaticBox.vue'),
+        component: () => import('../views/Car'),
         meta: {title: "首页"},
       }
     ]
   },
   {
-    path: '/user',
-    redirect: "/user/index",
-    name: 'user',
+    path: '/data',
+    redirect: "/data/car",
+    name: 'car',
     component: Home,
-    meta: {title: "用户中心", icon: "el-icon-user-solid"},
+    meta: {title: "数据管理", icon: "el-icon-menu"},
     children: [
       {
-        path: '/user/index',
-        name: 'index',
-        meta: {title: "用户管理"},
-        component: () => import('../views/Users'),
-      },
-      {
-        path: '/user/payment',
-        name: 'payment',
-        // 设置props为true是，在用push的时候可以用params传递参数给props
-        props: true,
-        meta: {title: "账单管理"},
-        component: () => import('../views/Payment'),
-      },
-      {
-        path: '/user/todoList',
-        name: 'todoList',
-        // 设置props为true是，在用push的时候可以用params传递参数给props
-        props: true,
-        meta: {title: "待办事项"},
-        component: () => import('../views/TodoList'),
-      }
-    ]
-  },
-  {
-    path: '/right',
-    redirect: "/right/role",
-    name: 'right',
-    component: Home,
-    meta: {title: "权限管理", icon: "el-icon-menu"},
-    children: [
-      {
-        path: '/right/role',
-        name: 'role',
-        meta: {title: "角色管理"},
-        component: () => import('../views/Roles'),
-      },
-      {
-        path: '/right/permission',
-        name: 'permission',
-        // 设置props为true是，在用push的时候可以用params传递参数给props
-        props: true,
-        meta: {title: "权限管理"},
-        component: () => import('../views/Permissions'),
+        path: '/data/car',
+        name: 'car',
+        meta: {title: "车辆信息"},
+        component: () => import('../views/CarInfoManage'),
       }
     ]
   },

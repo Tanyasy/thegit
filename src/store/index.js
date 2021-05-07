@@ -3,7 +3,8 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     isCollapse: false,
-    userName: ""
+    userName: "",
+    tableData: []
   },
   mutations: {
     setCollapse(state) {
@@ -11,6 +12,9 @@ export default createStore({
     },
     setUserName(state, tmp) {
       state.userName = tmp
+    },
+    settableData(state, tmp) {
+      state.tableData = tmp
     }
   },
   actions: {
