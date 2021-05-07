@@ -1,29 +1,8 @@
 <template>
-    <div class="body">
 
-        <div class="header">
-            <div class="search">
-                <!--<b>商品名称:</b>-->
-                <el-input
-                        autosize
-                        v-model="state.name"
-                        placeholder="请输入车型名称"
-                        clearable
-                ></el-input>
-                <el-button @click="startSearch">搜 索</el-button>
-            </div>
-
-            <!--重置功能-->
-            <el-button
-                    v-show="showReset"
-                    @click="reset"
-                    type="info"
-                    icon="el-icon-refresh-right"
-                    circle
-            ></el-button>
-
-            <div style="clear: both"></div>
-        </div>
+    <el-row>
+      <el-col :span="30">
+             <div class="body">
         <!--<el-divider></el-divider>-->
 
         <div class="mid">
@@ -36,34 +15,34 @@
                 :data="tableData"
                 :cell-style="rowClass"
                 :header-cell-style="headClass"
-                style="width: 723px"
+                style="width: 653px"
         >
             <el-table-column
                     align="center"
                     prop="id"
                     label="序号"
-                    width="80"
+                    width="70"
             >
             </el-table-column>
             <el-table-column
                     align="center"
                     prop="name"
                     label="车型"
-                    width="120"
+                    width="100"
             >
             </el-table-column>
             <el-table-column
                     align="center"
                     prop="configuration"
                     label="配置"
-                    width="200"
+                    width="180"
             >
             </el-table-column>
             <el-table-column
                     align="center"
                     prop="property"
                     label="属性"
-                    width="120"
+                    width="100"
             >
                 <template #default="scope">
                     <!--<div class="product_name">-->
@@ -101,6 +80,29 @@
         </el-table>
 
     </div>
+
+      </el-col>
+      <el-col :span="30">
+                  <div class="header">
+            <div class="search">
+                <!--<b>商品名称:</b>-->
+                <el-input
+                        autosize
+                        v-model="state.name"
+                        placeholder="请输入车型名称"
+                        clearable
+                ></el-input>
+                <el-button @click="startSearch">搜 索</el-button>
+            </div>
+
+        </div>
+
+      </el-col>
+    </el-row>
+
+
+
+
 </template>
 
 <script>
@@ -126,8 +128,8 @@
             const uploadTarget = ref(null);
             const state = reactive({
                 currentPage: 0,
-                limit: 5,
-                name: "",
+                limit: 8,
+                name: null,
                 pageArray: [10, 20, 50, 100, 500],
                 tableData: [],
                 tableSelectionData: [],
@@ -141,22 +143,19 @@
                 },
             });
 
-            function getCars(
-                name = null,
-                page = 0,
-                limit = 5
-            ) {
-                let url = "car/?page=" + page + "&limit=" + limit;
+            function getCars() {
+
+                let url = "car/?page=" + state.currentPage + "&limit=" + state.limit;
 
                 // 有则传入查询，没有则不查
-                if (name) {
-                    url += "&name=" + name;
+                if (state.name) {
+                    url += "&name=" + state.name;
                 }
 
                 req("get", url).then((response) => {
                     // state.tableData = response.data;
 
-                    if (name) {
+                    if (state.name) {
                         let arrayList = response.data;
                         arrayList.push(...store.state.tableData);
                         store.commit("settableData", arrayList.slice(0, state.limit));
@@ -170,20 +169,12 @@
 
             const handleSizeChange = (size) => {
                 state.limit = size;
-                getCars(
-                    state.name,
-                    state.currentPage,
-                    state.limit
-                );
+                getCars();
             };
 
             const handleCurrentChange = (pageNum) => {
                 state.currentPage = pageNum;
-                getCars(
-                    state.name,
-                    state.currentPage,
-                    state.limit
-                );
+                getCars();
             };
 
             const handleDelete = (index, row) => {
@@ -194,11 +185,7 @@
                         message: "删除数据成功",
                         type: "success",
                     });
-                    getCars(
-                        state.name,
-                        state.currentPage,
-                        state.limit
-                    );
+                    getCars();
                 });
             };
 
@@ -231,11 +218,7 @@
                         });
                         uploadTarget.value.clearFiles();
                         dialogVisible.value = false;
-                        getCars(
-                            state.name,
-                            state.currentPage,
-                            state.limit
-                        );
+                        getCars();
                     }
                 });
             };
@@ -270,11 +253,7 @@
                                     type: "success",
                                 });
                                 editDialogVisible.value = false;
-                                getCars(
-                                    state.name,
-                                    state.currentPage,
-                                    state.limit
-                                );
+                                getCars();
                             }
                         }
                     );
@@ -290,11 +269,7 @@
                         type: "warning",
                     });
                 } else {
-                    getCars(
-                        state.name,
-                        state.currentPage,
-                        state.limit
-                    );
+                    getCars();
                 }
             };
 
@@ -310,20 +285,16 @@
             };
 
             const headClass = () => {
-                return "background-color: rgb(35, 33, 38);color: white;font:600 20px/1.5 tahoma, arial, Microsoft Yahei;border-color: rgb(133, 131, 136)"
+                return "background-color: rgb(35, 33, 38);color: white;font:600 22px/1.5 tahoma, arial, Microsoft Yahei;border-color: rgb(133, 131, 136)"
             };
 
             const rowClass = () => {
-                return "background-color: rgb(35, 33, 38);color: white;font:500 18px/1.5 tahoma, arial, Microsoft Yahei;border-color: rgb(133, 131, 136)"
+                return "background-color: rgb(35, 33, 38);color: white;font:500 20px/1.5 tahoma, arial, Microsoft Yahei;border-color: rgb(133, 131, 136)"
             };
 
             onMounted(() => {
                 if (store.state.tableData && store.state.tableData.length === 0) {
-                    getCars(
-                    state.name,
-                    state.currentPage,
-                    state.limit
-                );
+                    getCars();
                 }
             });
 
@@ -364,27 +335,10 @@
 
 <style lang="scss" scoped>
     .body {
-        width: 723px;
+        width: 653px;
         margin: 0 100px;
         background-color: rgb(35, 33, 38);
 
-        > .header {
-            > .search {
-                float: right;
-                padding: 10px 0;
-
-                .el-input {
-                    border-radius: 1px;
-                    display: inline-block;
-                    width: 200px;
-                }
-            }
-
-            .el-button {
-                background-color: rgb(35, 33, 38);
-                color: white;
-            }
-        }
 
         > .mid {
             .mid-icons {
@@ -442,4 +396,23 @@
         border-bottom: 1px solid rgb(221, 69, 61);
         border-right: 1px solid rgb(221, 69, 61);
     }
+
+
+    .header {
+            > .search {
+                float: right;
+                padding: 10px 0;
+
+                .el-input {
+                    border-radius: 1px;
+                    display: inline-block;
+                    width: 200px;
+                }
+            }
+
+            .el-button {
+                background-color: rgb(35, 33, 38);
+                color: white;
+            }
+        }
 </style>

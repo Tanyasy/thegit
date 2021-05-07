@@ -16,53 +16,9 @@
             <!--账单数据导入功能-->
             <el-button
                     type="primary"
-                    @click="dialogVisible = true"
-            >数据导入<i class="el-icon-upload el-icon--right"></i>
+                    @click="showAddDialog"
+            >新增数据
             </el-button>
-            <el-dialog
-                    title="账单数据导入"
-                    v-model="dialogVisible"
-                    width="30%"
-            >
-                <div class="searchChoice">
-                    <el-radio
-                            v-model="source"
-                            label="alipay"
-                    >支付宝
-                    </el-radio>
-                    <el-radio
-                            v-model="source"
-                            label="weixinpay"
-                    >微信
-                    </el-radio>
-                </div>
-                <el-upload
-                        class="upload"
-                        drag
-                        action="http://localhost:8080/api/v1/payments/file/"
-                        :on-success="handleOnSuccess"
-                        multiple
-                        :headers="state.headers"
-                        ref="uploadTarget"
-                >
-                    <i class="el-icon-upload"></i>
-                    <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                    <template #tip>
-                        <div class="el-upload__tip">
-                            只能上传 xls/csv 文件，且不超过 500kb
-                        </div>
-                    </template>
-                </el-upload>
-                <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button
-                  type="primary"
-                  @click="handleImportData"
-          >导 入</el-button>
-        </span>
-                </template>
-            </el-dialog>
 
             <!--重置功能-->
             <el-button
@@ -387,11 +343,11 @@
             function addItem() {
                 req(
                     "post",
-                    "permission",
-                    JSON.stringify([state.editItem])
+                    "car",
+                    JSON.stringify(state.editItem)
                 ).then((response) => {
                     ElMessage.success({
-                        message: "新增权限" + response.name + "成功",
+                        message: "新增车辆信息" + response.name + "成功",
                         type: "success",
                     });
                     getCars(
@@ -399,6 +355,7 @@
                         state.currentPage,
                         state.limit
                     );
+                    editDialogVisible.value = false;
                 });
             }
 
@@ -560,6 +517,20 @@
                 editDialogVisible.value = true
             }
 
+            function showAddDialog() {
+                state.title = "新增车辆信息";
+                // state.editItem.id = item.id;
+                // state.editItem.name = item.name;
+                // state.editItem.configuration = item.configuration;
+                // state.editItem.guice_price = item.guice_price;
+                // state.editItem.color = item.color;
+                // state.editItem.property = item.property;
+                // state.editItem.emission = item.emission;
+                // state.editItem.price = item.price;
+                // state.editItem.remark = item.remark;
+                state.editItem = {}
+                editDialogVisible.value = true
+            }
 
             onMounted(() => {
 
@@ -621,7 +592,8 @@
                 filterPayment,
                 reset,
                 headClass,
-                rowClass
+                rowClass,
+                showAddDialog
             };
         },
     };

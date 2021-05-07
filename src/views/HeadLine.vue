@@ -46,7 +46,7 @@ export default {
         function getCurrentRoute() {
             let matched = router.currentRoute.value.matched
             const first = matched[0]
-            if (first&& first.name != "home") {
+            if (first&& first.name !== "home") {
                 matched = [{ path: '/home',
                             name: 'home',
                             meta: {title: "首页"}}].concat(matched)
@@ -72,6 +72,7 @@ export default {
             setCollapse: () => store.commit("setCollapse"),
             backToLogin() {
                 store.commit("setUserName", "");
+                store.commit("settableData", []);
                 sessionStorage.removeItem("token");
                 router.push("/login")
             },
@@ -84,7 +85,6 @@ export default {
 <style lang="scss" scoped>
 .head {
     height: 100%;
-    background-color: black;
 
     .svg-icon {
         float: left;

@@ -1,10 +1,8 @@
-@font-face {font-family: "iconfont";
-  src: url('iconfont.eot?t=1608966155292'); /* IE9 */
-  src: url('iconfont.eot?t=1608966155292#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAO8AAsAAAAAB4QAAANtAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCDBgqCXIJFATYCJAMMCwgABCAFhG0HRRuaBsi+QSZjg6tVEi00kyV7sZlCVQ/P8E598d+6gQni4b/9/rfPzDzV9kmiyS2LJxbJrT2ieKI1folo9dWJ99Jf++BaMkFdNrnHSY68oD3einXqlWnJF628dgOHHB0pjbBdQEtmoP1cQO3thxP5elM3/fnbujCaFmhARRnU+Zjc5r8HaWGbV8Gc9UxVmaECo81NY/5GOGkRdXA5/f+m4DzLchlz2ZiDAkwwoDGGtSkLuIQxheGdWB3GcQJtK/jROZKRV4aMFRgXiBsSbUbGGZ3SkB6aQr1iaRHvoJmeJ3gb/D7+2RTGJLUMU49fSm9DST/rf5AX1cI8BH86C6RVZGyEFOJCpe08vSiwkZ62IdNvjq8rQprKXVUEPFNSJ394JEHUIbUL1nKa5KL4DpPEr4HgqvkPN7qOguuQj7xqOnSb1FrSicVXVsSVm+udvre+2EF+dnhfbicczOItzj5aTz/ezjw9zpk+HvPIiglA2dybA6pwMiBdJtaJ8nGqcrKEeGycyB9P+bIx2DKVtUgoL55GPuZKK5dxX7CPffxcfH2f2z9+/JfpulyiN+aN8kaMWZaiVkWNzrB9XmYavLfiK09cGZ2ULxO2x3Y5/Adciq8sRjaHqSNNLaAmD03uHMj1rV8e6Pm9XC21tPRLV/Snis+f6T40WVyaVd0PL0431RltaHOvd4d3OF66M9SOhfmX9n1uts0ilj++cdKLUBOEajmT0gP/qz6U9G7+m/M8PVcwaFvtGQV870UnEHVLRpoSnfl/QlM0IMsiUwh9LrpUI892ZEcHWhIsR3aqwDX2fLhqdreh0DRLIGlYgqxpJVoIG6GmYwvUNe2Htg0yV3dMcHqitLBePwNhaBuSvk+QDd2ihfAMaubeQt0w9KDtbEy27FgdkulhDs0C2nBLL5ZamYZQozAN00uAdqqaeVoYUCqAy5IbBwcE5cOZoAE+xQy5i4YIQTDhTI0zmNNApWJYy1k7tIoAhRDamMBAUvWigFamRqYO40AzAbTBWvTCJK0YDeK1F0wL3y8BqE4qzXhDXYO1AuBkUudYsABBHdBMmaZT3a1cIutChRAEAiM4Rg3LYCxARQIMpq0e1A60EgIoBvi0YgRyrUhXWcDyCvUL5EpNYPscKXIUjRuM+rNOYePf26yRwZ94+R0SKJiGIgQAAAA=') format('woff2'),
-  url('iconfont.woff?t=1608966155292') format('woff'),
-  url('iconfont.ttf?t=1608966155292') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
-  url('iconfont.svg?t=1608966155292#iconfont') format('svg'); /* iOS 4.1- */
+@font-face {
+  font-family: "iconfont"; /* Project id 2266015 */
+  src: url('iconfont.woff2?t=1620355896130') format('woff2'),
+       url('iconfont.woff?t=1620355896130') format('woff'),
+       url('iconfont.ttf?t=1620355896130') format('truetype');
 }
 
 .iconfont {
@@ -15,13 +13,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-[class^="icon-extra"], [class*=" icon-extra"] {
-  font-family:"iconfont" !important;
-  /* 以下内容参照第三方图标库本身的规则 */
-  font-size: 14px;
-  font-style:normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.icon-extradouyin:before {
+  content: "\e8db";
 }
 
 .icon-extralog-out:before {
@@ -31,3 +24,4 @@
 .icon-extra-yanse-fanqiehong:before {
   content: "\e6ab";
 }
+

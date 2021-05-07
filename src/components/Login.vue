@@ -85,9 +85,9 @@
 
         <el-form-item prop="telephone">
           <el-input
-            prefix-icon="el-icon-phone"
+            prefix-icon="iconfont icon-extradouyin"
             v-model="registerForm.telephone"
-            placeholder="请输入手机号码"
+            placeholder="请输入抖音名"
           ></el-input>
         </el-form-item>
         <!-- 密码 -->
@@ -193,13 +193,13 @@ export default {
         // trigger定义验证时机，blur表示失去焦点时验证
         {
           required: true,
-          message: "请输入手机号码",
+          message: "请输入抖音号名称",
           trigger: "blur",
         },
         {
-          min: 11,
-          max: 11,
-          message: "手机号长度不符",
+          min: 2,
+          max: 20,
+          message: "抖音号长度不符",
           trigger: "blur",
         },
       ],
