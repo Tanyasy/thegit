@@ -6,7 +6,10 @@ import {ElMessage} from "element-plus";
 //创建axios的一个实例
 var instance = axios.create({
     baseURL:'http://127.0.0.1:8080/api/v1/',//接口统一域名
-    timeout: 6000                                                       //设置超时
+    timeout: 6000,                           //设置超时
+    headers:{
+                'Content-Type':'application/json;charset=utf-8' //改这里就好了
+            }
 })
 // 请求拦截器
 instance.interceptors.request.use(function (config) {
