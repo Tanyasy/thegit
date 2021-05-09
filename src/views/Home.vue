@@ -73,7 +73,7 @@
             const route = useRouter()
             const scrollTop = ref(0)
             const goTopShow = ref(false)
-            let routers = reactive(route.options.routes)
+            let routers = reactive(route.options.routes);
 
             const scrollToTop = () => {
                 // 获取el-main元素的scrollTop属性，判断单前移动位置
@@ -98,7 +98,7 @@
                     }
                 }, 16)
 
-            }
+            };
 
             function hasOneShowingChild(children = []) {
                 const showingChildren = children.filter(item => {

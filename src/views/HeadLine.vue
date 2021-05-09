@@ -7,17 +7,38 @@
     <el-dropdown @visible-change="changeValue" style="float: right">
         <div class="user-item">
             <i class="el-icon-arrow-down" :class="{go:rotate , aa :!rotate}"></i>
-            <span>{{userName}} </span>
+            <span>{{tikTokName}} </span>
             <el-avatar size="50" :src="circleUrl"></el-avatar>
         </div>
         <template #dropdown>
             <el-dropdown-menu>
-                <el-button @click="backToLogin" icon="iconfont icon-extralog-out"> 退出登录</el-button>
+                <el-button @click="editDialogVisible = true" icon="iconfont icon-extradouyin">设置抖音号</el-button>
             </el-dropdown-menu>
         </template>
 
     </el-dropdown>
 </div>
+        <el-dialog
+            title="设置抖音号"
+            v-model="editDialogVisible"
+            width="400px"
+            center>
+        <div class="edit-name">
+            <span>抖音号: </span>
+            <el-input
+                    v-model="tikTokName">
+            </el-input>
+        </div>
+        <div style="clear: both"></div>
+        <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="editDialogVisible = false">取 消</el-button>
+                  <el-button type="primary" @click="setTikTokName">确 定</el-button>
+                </span>
+        </template>
+
+    </el-dialog>
+
 </template>
 
 <script>
@@ -31,6 +52,7 @@ import {
 import {
     useRouter
 } from "vue-router";
+import { ElMessage } from "element-plus";
 
 export default {
     name: "headLine",
@@ -38,6 +60,8 @@ export default {
         const store = useStore()
         const circleUrl = ref(require("../assets/duck.jpg"))
         const rotate = ref(false)
+        const tikTokName = ref("")
+        const editDialogVisible = ref(false)
         const router = useRouter()
         function changeValue(callback) {
             rotate.value = callback
@@ -62,12 +86,23 @@ export default {
             return matched
         }
 
+        const setTikTokName = () => {
+            store.commit("setTikTokName", tikTokName.value);
+            ElMessage.success({
+              message: "修改成功了٩(๑>◡<๑)۶ " ,
+              type: "success",
+            });
+            editDialogVisible.value = false
+        };
+
         return {
             rotate,
             changeValue,
             circleUrl,
             isCollapse: computed(() => store.state.isCollapse),
             userName: computed(() => store.state.userName),
+            tikTokName,
+            editDialogVisible,
             // 访问一个 mutation
             setCollapse: () => store.commit("setCollapse"),
             backToLogin() {
@@ -77,7 +112,8 @@ export default {
                 sessionStorage.removeItem("token");
                 router.push("/login")
             },
-            getCurrentRoute
+            getCurrentRoute,
+            setTikTokName
         }
     }
 }

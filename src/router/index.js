@@ -32,12 +32,12 @@ const routes = [
         meta: {title: "车辆信息"},
         component: () => import('../views/CarInfoManage'),
       },
-      {
-        path: '/data/user',
-        name: 'user',
-        meta: {title: "用户信息"},
-        component: () => import('../views/Users'),
-      }
+      // {
+      //   path: '/data/user',
+      //   name: 'user',
+      //   meta: {title: "用户信息"},
+      //   component: () => import('../views/Users'),
+      // }
     ]
   },
   {
@@ -53,16 +53,16 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  // 去login的路由直接放行，要不会死循环
-  if (to.path === "/login") return next()
-  if (sessionStorage.getItem("token")) {
-    return next()
-  } else {
-    return next({
-      name: "login"
-    })
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   // 去login的路由直接放行，要不会死循环
+//   if (to.path === "/home") return next()
+//   if (sessionStorage.getItem("token")) {
+//     return next()
+//   } else {
+//     return next({
+//       name: "home"
+//     })
+//   }
+// })
 
 export default router

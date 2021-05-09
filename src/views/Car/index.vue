@@ -6,6 +6,7 @@
         <!--<el-divider></el-divider>-->
 
         <div class="mid">
+
             <p class="mid-icons">{{tikTokName}}</p>
             <p class="mid-message">将车型打公屏上 8秒出车价</p>
         </div>
