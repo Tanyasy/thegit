@@ -1,107 +1,113 @@
 <template>
 
     <el-row>
-      <el-col :span="30">
-             <div class="body">
-        <!--<el-divider></el-divider>-->
+        <el-col :span="30">
+            <div class="body">
+                <!--<el-divider></el-divider>-->
+                <div class="top">
 
-        <div class="mid">
+                    <p class="top-sign"><span class="red">关注</span>主播，带你上高速</p>
+                </div>
 
-            <p class="mid-icons">{{tikTokName}}</p>
-            <p class="mid-message">将车型打公屏上 8秒出车价</p>
-        </div>
-        <el-table
-                ref="multipleTable"
-                border
-                :data="tableData"
-                :cell-style="rowClass"
-                :header-cell-style="headClass"
-                style="width: 653px"
-        >
-            <el-table-column
-                    align="center"
-                    prop="id"
-                    label="序号"
-                    width="70"
-            >
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="name"
-                    label="车型"
-                    width="100"
-            >
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="configuration"
-                    label="配置"
-                    width="180"
-            >
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="property"
-                    label="属性"
-                    width="100"
-            >
-                <template #default="scope">
-                    <!--<div class="product_name">-->
-                    {{ scope.row.property }}
-                    <!--</div>-->
-                </template>
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="price"
-                    label="指导价(W)"
-                    width="100"
+                <div class="mid">
 
-            >
-                <template #default="scope">
-                    <div class="money">
-                        {{scope.row.price}}
-                    </div>
-                </template>
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="remark"
-                    label="优惠"
-                    width="100"
+                    <p class="mid-icons">{{tikTokName}}</p>
+                    <p class="mid-message">将车型打公屏上 8秒出车价</p>
+                </div>
+                <el-table
+                        ref="multipleTable"
+                        border
+                        :data="tableData"
+                        :cell-style="rowClass"
+                        :header-cell-style="headClass"
+                        style="width: 653px"
+                >
+                    <el-table-column
+                            align="center"
+                            prop="id"
+                            label="序号"
+                            width="70"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            align="center"
+                            prop="name"
+                            label="车型"
+                            width="100"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            align="center"
+                            prop="guice_price"
+                            label="指导价"
+                            width="100"
 
-            >
-                <template #default="scope">
-                    <div class="remark">
-                        {{scope.row.remark}}
-                    </div>
-                </template>
-            </el-table-column>
+                    >
+                        <template #default="scope">
+                            <div class="money">
+                                {{scope.row.guice_price}}
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            align="center"
+                            prop="configuration"
+                            label="配置"
+                            width="180"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                            align="center"
+                            prop="price"
+                            label="价格(W)"
+                            width="100"
 
-        </el-table>
+                    >
+                        <template #default="scope">
+                            <div class="remark">
+                                {{scope.row.price}}
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            align="center"
+                            prop="property"
+                            label="属性"
+                            width="100"
+                    >
+                        <template #default="scope">
+                            <!--<div class="product_name">-->
+                            {{ scope.row.property }}
+                            <!--</div>-->
+                        </template>
+                    </el-table-column>
 
-    </div>
 
-      </el-col>
-      <el-col :span="30">
-                  <div class="header">
-            <div class="search">
-                <!--<b>商品名称:</b>-->
-                <el-input
-                        autosize
-                        v-model="state.name"
-                        placeholder="请输入车型名称"
-                        clearable
-                ></el-input>
-                <el-button @click="startSearch">搜 索</el-button>
+                </el-table>
+                <div class="tail">
+                    <p class="fans">粉丝团3级</p>
+                    <p class="fans-sign">全国免费就近帮拿车</p>
+                </div>
             </div>
 
-        </div>
+        </el-col>
+        <el-col :span="30">
+            <div class="header">
+                <div class="search">
+                    <!--<b>商品名称:</b>-->
+                    <el-input
+                            autosize
+                            v-model="state.name"
+                            placeholder="请输入车型名称"
+                            clearable
+                    ></el-input>
+                    <el-button @click="startSearch">搜 索</el-button>
+                </div>
 
-      </el-col>
+            </div>
+
+        </el-col>
     </el-row>
-
-
 
 
 </template>
@@ -111,6 +117,7 @@
     import {ElMessage} from "element-plus";
     import req from "../../http/http";
     import {useStore} from "vuex";
+
     export default {
         name: "index",
         props: {
@@ -127,7 +134,7 @@
             const uploadTarget = ref(null);
             const state = reactive({
                 currentPage: 0,
-                limit: 8,
+                limit: 6,
                 name: null,
                 pageArray: [10, 20, 50, 100, 500],
                 tableData: [],
@@ -336,21 +343,59 @@
 <style lang="scss" scoped>
     .body {
         width: 653px;
-        margin: 0 100px;
+        margin: 50px 200px;
         background-color: rgb(35, 33, 38);
 
+        > .top {
+            p {
+                /*float: left;*/
+                display: inline-block;
+                color: white;
+                font: 600 30px/1.2 tahoma, arial, Microsoft Yahei;
+                margin: 20px;
+            }
+            .red {
+                color: red;
+            }
+        }
 
         > .mid {
+
             .mid-icons {
                 float: left;
                 color: white;
-                font: 500 25px/1.2 tahoma, arial, Microsoft Yahei;
+                margin-bottom: 20px;
+                margin-top: 0;
+                font: 500 30px/1.2 tahoma, arial, Microsoft Yahei;
             }
 
             .mid-message {
                 float: right;
                 color: white;
-                font: 500 25px/1.2 tahoma, arial, Microsoft Yahei;
+                margin-bottom: 20px;
+                margin-top: 0;
+                font: 600 30px/1.2 tahoma, arial, Microsoft Yahei;
+            }
+        }
+
+        > .tail {
+            p {
+                color: white;
+                font: italic 800 40px/1.2 tahoma, arial, YouYuan;
+                letter-spacing: 5px;
+                margin: 20px 0;
+                padding: 5px;
+                height:52px;
+                /*line-height:40px;*/
+            }
+
+            .fans {
+                float: left;
+                background-color: red;
+            }
+
+            .fans-sign {
+                float: right;
             }
         }
     }
@@ -399,20 +444,22 @@
 
 
     .header {
-            > .search {
-                float: right;
-                padding: 10px 0;
+        margin-left: 100px;
 
-                .el-input {
-                    border-radius: 1px;
-                    display: inline-block;
-                    width: 200px;
-                }
-            }
+        > .search {
+            float: right;
+            padding: 10px 0;
 
-            .el-button {
-                background-color: rgb(35, 33, 38);
-                color: white;
+            .el-input {
+                border-radius: 1px;
+                display: inline-block;
+                width: 200px;
             }
         }
+
+        .el-button {
+            background-color: rgb(35, 33, 38);
+            color: white;
+        }
+    }
 </style>

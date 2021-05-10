@@ -522,7 +522,7 @@
                 // state.editItem.emission = item.emission;
                 // state.editItem.price = item.price;
                 // state.editItem.remark = item.remark;
-                state.editItem = {}
+                state.editItem = {};
                 editDialogVisible.value = true
             }
 
