@@ -1,167 +1,169 @@
 <template>
-    <el-input v-model="input" placeholder='添加任务至"收集箱"，回车即可保存'></el-input>
+    <el-input v-model="state.input" placeholder='添加任务至"收集箱"，回车即可保存' @keyup.enter="addData"></el-input>
+    <div class="todo">
+        <el-tree
+            :props="state.props"
+            :data="state.tableData"
+            default-expand-all
+            show-checkbox
+            @check-change="handleCheckChange"
+    >
+    </el-tree>
+    </div>
+    <div class="finished">
+            <el-tree
+            :props="state.props"
+            :data="state.finishedData"
+            show-checkbox
+            :default-checked-keys="state.defaultCheckedList"
+            node-key="id"
+    >
+    </el-tree>
+    </div>
 </template>
 
 <script>
-    import {ref, reactive, onMounted} from "vue";
+    import {reactive, onMounted} from "vue";
     import {ElMessage} from "element-plus";
     import req from "../../http/http";
 
     export default {
         name: "index",
         setup() {
-            const currentPage = ref(0);
-            const limit = ref(10);
-            const visible = ref(false);
-            const editDialogVisible = ref(false);
+
             const state = reactive({
-                itemList: [],
-                tableData: [],
-                value: "",
-                editUser: {
-                    role_id: null,
-                    is_active: true,
-                    telephone: "",
-                    email: null,
-                    id: "",
-                    is_superuser: false,
-                    name: "",
+                input: "",
+                createData: {
+                    title: "",
+                    desc: ""
                 },
-                currentPage: 0,
-                limit: 10,
-                total: 0,
-                pageArray: [5, 10, 20, 50, 100],
+                tableData: [],
+                finishedData: [],
+                defaultCheckedList: [],
+                props: {
+                    label: 'title',
+                    children: 'zones'
+                },
             });
 
-            function getUsers() {
+            function getData(status=0) {
                 req(
                     "get",
-                    "users/?page=" + state.currentPage + "&limit=" + state.limit
+                    "todo_list/?status=" + status
                 ).then((response) => {
-                    state.tableData = response.data
-                    state.total = response.count
-                    editDialogVisible.value = false
+                    state.tableData = response
                 });
             }
 
-            function updateUser() {
+            function getFinishedData(status=2) {
+                req(
+                    "get",
+                    "todo_list/?status=" + status
+                ).then((response) => {
+                    state.finishedData = response;
+                    state.defaultCheckedList = [];
+                    for (const index in response) {
+                        state.defaultCheckedList.push(response[index].id)
+                    }
+                    console.log(state.defaultCheckedList)
+                });
+            }
+
+            function getAllData() {
+                getData();
+                getFinishedData();
+            }
+
+            function addData() {
+                if (state.input === "" || !state.input) {
+                    return
+                } else {
+                    state.createData.title = state.input
+                }
+                req(
+                    "post",
+                    "todo_list/",
+                    JSON.stringify(state.createData)
+                ).then(() => {
+                    ElMessage.success({
+                        message: "添加代办事项成功",
+                        type: "success",
+                      });
+                    state.input = "";
+                    getData();
+                });
+            }
+
+            function updateData(data) {
                 req(
                     "put",
-                    "users/",
-                    JSON.stringify(state.editUser)
-                ).then((response) => {
+                    "todo_list/" + data.id,
+                    JSON.stringify(data)
+                ).then(() => {
                     ElMessage.success({
-                        message: "修改用户" + response.name + "成功",
+                        message: "更新待办事项成功",
                         type: "success",
-                    });
-                    getUsers(currentPage.value * limit.value, limit.value);
+                      });
+                    state.input = "";
+                    getAllData();
                 });
             }
 
-            function getRoles() {
-                req(
-                    "get",
-                    "role"
-                ).then((response) => {
-                    state.itemList = response.data
-                });
-
-            }
-
-            function handleEdit(index, item) {
-                console.log(index);
-                state.editUser = item
-                editDialogVisible.value = true
-            }
-
-            function deleteUser(index, item) {
-
-                console.log(item.id);
-                req("delete", "users/" + item.id).then((response) => {
-                    ElMessage.success({
-                        message: "删除用户" + response.name + "成功",
-                        type: "success",
-                    });
-                    getUsers();
-                });
-            }
-
-            const dateFormat = (dateStr) => {
-                return dateStr.replace("T", " ");
-            };
-
-            const handleSizeChange = (size) => {
-                state.limit = size;
-                getUsers();
-            };
-
-            const handleCurrentChange = (page) => {
-                if (page) {
-                    state.currentPage = page;
-                    getUsers();
+            function handleCheckChange(data, checked) {
+                if (checked) {
+                    data.status = 2;
+                } else {
+                    data.status = 0;
                 }
-            };
+                console.log(data, checked);
+                updateData(data);
+            }
 
             onMounted(() => {
-                getUsers(currentPage.value * limit.value, limit.value);
-                getRoles();
-
+                getAllData()
             });
 
             return {
-                currentPage,
                 state,
-                limit,
-                visible,
-                editDialogVisible,
-                getRoles,
-                dateFormat,
-                deleteUser,
-                updateUser,
-                handleEdit,
-                handleSizeChange,
-                handleCurrentChange,
+                getData,
+                addData,
+                handleCheckChange
             };
         },
     };
 </script>
 
 <style lang="scss" scoped>
-    .table {
-        font: 15px/1.5 tahoma, arial, \5b8b\4f53;
-        margin: 10px 20px;
+    .el-input {
+        padding-left: 20px;
+    }
 
-        border: 2px solid rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        /*box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);*/
-        /*height: 680px;*/
-        padding: 10px;
-        /*background-color: rgba(0, 0, 0, .1);*/
-        .page {
-            margin-left: 50%;
-            margin-top: 20px;
+    .el-tree {
+         ::v-deep .el-tree-node {
+             padding: 7px 0;
+
+
+             .el-checkbox__input {
+
+             }
+
+             .el-tree-node__label {
+                 font-size: 15px;
+                 /*border-bottom: 1px solid gray;*/
+             }
+
+        }
+    }
+
+
+    .todo {
+
+    }
+
+    .finished {
+        .el-tree {
+            color: rgb(0,0,0,0.3);
         }
 
-        .el-dialog__body {
-            span {
-                margin-right: 10px;
-            }
-             .edit-name {
-                .el-input {
-                    width: 80%;
-                }
-                }
-            .edit-role {
-                margin: 15px 0;
-                .el-select {
-                    width: 80%;
-                }
-            }
-            .edit-is-superuser {
-                .el-switch {
-                    display: inline-flex;
-                }
-            }
-        }
     }
 </style>
